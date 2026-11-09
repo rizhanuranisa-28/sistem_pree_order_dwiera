@@ -35,9 +35,7 @@ use App\Http\Controllers\AdminTambahPesananController;
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::redirect('/', '/login');
 
 
 /*
