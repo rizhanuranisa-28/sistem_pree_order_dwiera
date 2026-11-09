@@ -551,6 +551,13 @@
                     $statusBukti = $pembayaran->status_bukti ?? 'menunggu';
                     $alasanPengembalian = $pembayaran->alasan_pengembalian;
                     $riwayatBukti = $pembayaran->riwayatBukti ?? collect();
+                    $buktiUrl = static function ($path) {
+                        $path = str_replace('\\', '/', (string) $path);
+
+                        return str_starts_with($path, 'bukti/')
+                            ? asset('storage/' . $path)
+                            : asset('images/bukti/' . basename($path));
+                    };
                 @endphp
 
                 <div class="proof-box" style="margin-top: 20px;">
@@ -586,10 +593,10 @@
                             Bukti transfer terbaru:
                         </p>
 
-                        <a href="{{ asset('images/bukti/' . $bukti) }}"
+                        <a href="{{ $buktiUrl($bukti) }}"
                            target="_blank"
                            rel="noopener noreferrer">
-                            <img src="{{ asset('images/bukti/' . $bukti) }}"
+                            <img src="{{ $buktiUrl($bukti) }}"
                                  alt="Bukti transfer terbaru"
                                  class="proof-img">
                         </a>
@@ -670,12 +677,12 @@
 
                                 <div class="history-item">
 
-                                    <a href="{{ asset('images/bukti/' . $riwayat->nama_file) }}"
+                                    <a href="{{ $buktiUrl($riwayat->nama_file) }}"
                                        target="_blank"
                                        rel="noopener noreferrer">
 
                                         <img
-                                            src="{{ asset('images/bukti/' . $riwayat->nama_file) }}"
+                                            src="{{ $buktiUrl($riwayat->nama_file) }}"
                                             alt="Riwayat bukti transfer"
                                             class="history-thumb"
                                             loading="lazy"
@@ -716,7 +723,7 @@
                                         <br>
 
                                         <a
-                                            href="{{ asset('images/bukti/' . $riwayat->nama_file) }}"
+                                            href="{{ $buktiUrl($riwayat->nama_file) }}"
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             class="history-link"

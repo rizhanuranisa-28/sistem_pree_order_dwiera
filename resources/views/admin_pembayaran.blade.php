@@ -721,22 +721,14 @@
                                         ?? $pesanan->customer->nama
                                         ?? '-';
 
-                                    /*
-                                     * Bukti transfer tersimpan di:
-                                     * public/images/bukti/
-                                     *
-                                     * Gunakan asset() agar URL langsung menuju
-                                     * folder bukti yang bisa diakses publik.
-                                     */
                                     $pathBukti = $item->bukti_pembayaran;
                                     $urlBukti = null;
 
                                     if (!empty($pathBukti)) {
-                                        $namaFile = basename(
-                                            str_replace('\\', '/', $pathBukti)
-                                        );
-
-                                        $urlBukti = asset('images/bukti/' . $namaFile);
+                                        $pathBukti = str_replace('\\', '/', $pathBukti);
+                                        $urlBukti = str_starts_with($pathBukti, 'bukti/')
+                                            ? asset('storage/' . $pathBukti)
+                                            : asset('images/bukti/' . basename($pathBukti));
                                     }
                                 @endphp
 

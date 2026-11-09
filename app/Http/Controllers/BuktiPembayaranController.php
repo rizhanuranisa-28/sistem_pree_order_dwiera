@@ -7,6 +7,7 @@ use App\Models\RiwayatBuktiPembayaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class BuktiPembayaranController extends Controller
 {
@@ -103,26 +104,16 @@ class BuktiPembayaranController extends Controller
 
         $file = $request->file('bukti');
 
-        // Nama unik supaya file lama tidak tertimpa.
-        $namaFile = 'bukti_'
-            . $pesanan->id_pesanan
-            . '_'
-            . uniqid()
-            . '.'
-            . $file->extension();
+        $pathBukti = $file->store('bukti', 'public');
 
-        $folderBukti = public_path('images/bukti');
-
-        // Pastikan folder penyimpanan tersedia.
-        if (!is_dir($folderBukti)) {
-            mkdir($folderBukti, 0755, true);
+        if ($pathBukti === false) {
+            return back()
+                ->withErrors(['bukti' => 'Bukti gagal disimpan. Silakan coba lagi.'])
+                ->withInput();
         }
 
-        // Simpan file baru tanpa menghapus file bukti sebelumnya.
-        $file->move($folderBukti, $namaFile);
-
         try {
-            DB::transaction(function () use ($pembayaran, $namaFile) {
+            DB::transaction(function () use ($pembayaran, $pathBukti) {
 
                 $data = $pembayaran->newQuery()
                     ->where('id_pembayaran', $pembayaran->id_pembayaran)
@@ -158,7 +149,7 @@ class BuktiPembayaranController extends Controller
 
                 // Simpan bukti terbaru dan reset status pemeriksaan.
                 $data->update([
-                    'bukti_pembayaran' => $namaFile,
+                    'bukti_pembayaran' => $pathBukti,
                     'status_bukti' => 'menunggu',
                     'alasan_pengembalian' => null,
                 ]);
@@ -166,7 +157,7 @@ class BuktiPembayaranController extends Controller
                 // Catat bukti terbaru di tabel riwayat.
                 RiwayatBuktiPembayaran::create([
                     'id_pembayaran' => $data->id_pembayaran,
-                    'nama_file' => $namaFile,
+                    'nama_file' => $pathBukti,
                     'alasan_pengembalian' => null,
                     'tanggal_upload' => now(),
                     'status' => 'menunggu',
@@ -174,9 +165,7 @@ class BuktiPembayaranController extends Controller
             });
         } catch (\Throwable $e) {
             // Hapus hanya file baru jika penyimpanan database gagal.
-            if (is_file($folderBukti . DIRECTORY_SEPARATOR . $namaFile)) {
-                unlink($folderBukti . DIRECTORY_SEPARATOR . $namaFile);
-            }
+            Storage::disk('public')->delete($pathBukti);
 
             if ($e instanceof \RuntimeException) {
                 return redirect()
