@@ -1,59 +1,128 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistem Pre-Order Dwiera Cake
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi web untuk membantu pelanggan melihat produk Dwiera Cake, membuat pesanan pre-order, memilih jadwal pengambilan, dan mengirim bukti pembayaran. Admin dan owner dapat mengelola kegiatan operasional sesuai hak akses masing-masing.
 
-## About Laravel
+## Repository
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- GitHub: [rizhanuranisa-28/sistem_pree_order_dwiera](https://github.com/rizhanuranisa-28/sistem_pree_order_dwiera)
+- URL aplikasi: Belum dicantumkan.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Fitur
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Pelanggan
 
-## Learning Laravel
+- Registrasi, login, dan pengelolaan profil.
+- Melihat katalog dan detail produk beserta pilihan ukuran.
+- Menambahkan produk ke keranjang dan membuat pesanan pre-order.
+- Memilih tanggal dan jam pengambilan.
+- Memilih pembayaran cash atau transfer.
+- Mengunggah dan memperbarui bukti transfer.
+- Melihat pesanan dan status pemeriksaan pembayaran.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### Admin dan owner
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- Mengelola produk, pesanan, dan pembayaran sesuai hak akses.
+- Memeriksa bukti transfer dan memperbarui status pembayaran.
+- Melihat ringkasan, laporan, dan informasi operasional yang tersedia di aplikasi.
 
-## Laravel Sponsors
+## Teknologi
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- PHP 8.2 atau lebih baru
+- Laravel 12
+- SQLite sebagai konfigurasi database default lokal (dapat disesuaikan melalui `.env`)
+- Vite dan npm untuk membangun aset frontend
 
-### Premium Partners
+## Persyaratan
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Pasang perangkat berikut sebelum menjalankan project:
 
-## Contributing
+- PHP 8.2+
+- Composer
+- Node.js dan npm
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Instalasi dan Menjalankan Secara Lokal
 
-## Code of Conduct
+1. Clone repository dan masuk ke folder project:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+   ```bash
+   git clone https://github.com/rizhanuranisa-28/sistem_pree_order_dwiera.git
+   cd sistem_pree_order_dwiera
+   ```
 
-## Security Vulnerabilities
+2. Pasang dependency PHP dan JavaScript:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+   ```bash
+   composer install
+   npm install
+   ```
 
-## License
+3. Buat file konfigurasi lokal:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+   ```bash
+   # Windows PowerShell
+   Copy-Item .env.example .env
+
+   # macOS atau Linux
+   cp .env.example .env
+   ```
+
+4. Pastikan file database SQLite tersedia. Jika belum ada, buat file kosong:
+
+   ```bash
+   # Windows PowerShell
+   New-Item -ItemType File -Path database/database.sqlite
+
+   # macOS atau Linux
+   touch database/database.sqlite
+   ```
+
+   Konfigurasi default memakai SQLite. Jika menggunakan database lain, sesuaikan pengaturan koneksi di `.env`.
+
+5. Buat application key dan jalankan migrasi:
+
+   ```bash
+   php artisan key:generate
+   php artisan migrate
+   ```
+
+6. Build aset frontend dan jalankan server lokal:
+
+   ```bash
+   npm run build
+   php artisan serve
+   ```
+
+7. Buka alamat lokal yang ditampilkan Artisan, biasanya `http://127.0.0.1:8000`.
+
+## API
+
+Endpoint API yang tersedia:
+
+| Method | Endpoint | Keterangan |
+|---|---|---|
+| GET | `/api/health` | Pemeriksaan status aplikasi |
+| GET | `/api/produk` | Mengambil data produk |
+| GET | `/api/pesanan` | Mengambil data pesanan |
+| GET | `/api/pembayaran` | Mengambil data pembayaran |
+
+## Pengujian
+
+Jalankan automated test dengan:
+
+```bash
+composer test
+```
+
+## Informasi Pembayaran
+
+Informasi rekening transfer ditampilkan pada halaman pembayaran dan unggah bukti. Nilainya dikelola di `config/payment.php`. Periksa nilai tersebut sebelum deployment dan jangan memasukkan kredensial rahasia ke repository.
+
+## Deployment
+
+URL dan platform deployment belum dicantumkan di dokumentasi ini. Tambahkan URL aplikasi dan nama platform setelah aplikasi berhasil dipublikasikan.
+
+## Keamanan
+
+- Jangan commit file `.env`.
+- Jangan membagikan password, token, API key, atau kredensial database.
+- Gunakan konfigurasi environment yang sesuai untuk server production.
