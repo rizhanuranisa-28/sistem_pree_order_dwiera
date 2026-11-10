@@ -45,6 +45,10 @@
             padding: 14px; font-size: 13px; color: #555; line-height: 1.7; margin-bottom: 20px;
         }
 
+        .account-details {
+            margin-top: 12px; padding-top: 12px; border-top: 1px solid #ead8de;
+        }
+
         label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 14px; }
 
         input[type="file"] {
@@ -123,6 +127,21 @@
             <div class="info">
                 Transfer sesuai total di atas ke rekening pembayaran Dwiera,
                 lalu foto atau screenshot buktinya dan unggah di bawah.
+                <div class="account-details">
+                    <strong>Informasi Rekening Dwiera</strong>
+                    <div class="row">
+                        <span>Bank</span>
+                        <strong>{{ config('payment.bank') }}</strong>
+                    </div>
+                    <div class="row">
+                        <span>Atas Nama</span>
+                        <strong>{{ config('payment.account_name') }}</strong>
+                    </div>
+                    <div class="row">
+                        <span>Nomor Rekening</span>
+                        <strong>{{ config('payment.account_number') }}</strong>
+                    </div>
+                </div>
             </div>
 
             <form action="{{ route('pesanan.bukti', $pesanan->id_pesanan) }}"

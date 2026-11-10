@@ -310,11 +310,11 @@
                     Silakan lakukan pembayaran melalui transfer ke rekening resmi Dwiera berikut.
 
                     <br><br>
-                    🏦 Bank: BCA
+                    🏦 Bank: {{ config('payment.bank') }}
                     <br>
-                    👤 Atas Nama: Dewi sri
+                    👤 Atas Nama: {{ config('payment.account_name') }}
                     <br>
-                    💳 Nomor Rekening: 3460788616
+                    💳 Nomor Rekening: {{ config('payment.account_number') }}
 
                     <br><br>
                     Setelah melakukan pembayaran, silakan simpan bukti transfer. Admin akan memeriksa dan memverifikasi pembayaran kamu.
