@@ -37,21 +37,12 @@
         left: 0;
     }
 
-    .logo {
-        text-align: center;
-        margin-bottom: 35px;
-    }
-
-    .logo img {
-        width: 105px;
-    }
-
     .admin-label {
         text-align: center;
         font-size: 11px;
         color: #c66b88;
         font-weight: bold;
-        margin-top: -20px;
+        margin-top: 0;
         margin-bottom: 25px;
         letter-spacing: 1px;
     }
@@ -319,10 +310,6 @@
             padding: 20px 10px;
         }
 
-        .logo img {
-            width: 45px;
-        }
-
         .admin-label {
             display: none;
         }
@@ -376,10 +363,6 @@
 
 ```
 <aside class="sidebar">
-
-    <div class="logo">
-        <img src="{{ asset('images/logo_dwiera_jpg.jpeg') }}" alt="Logo Dwiera">
-    </div>
 
     <div class="admin-label">ADMIN PANEL</div>
 
