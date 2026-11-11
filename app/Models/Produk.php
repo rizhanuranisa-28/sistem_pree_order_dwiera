@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Produk extends Model
 {
@@ -37,5 +38,20 @@ class Produk extends Model
             'id_produk',
             'id_produk'
         );
+    }
+
+    public function getGambarUrlAttribute(): ?string
+    {
+        if (!$this->gambar) {
+            return null;
+        }
+
+        $path = 'images/produk/' . $this->gambar;
+
+        if (Storage::disk('public')->exists($path)) {
+            return Storage::disk('public')->url($path);
+        }
+
+        return asset($path);
     }
 }

@@ -807,7 +807,7 @@
 
                 @if($heroProduk)
                     <img
-                        src="{{ asset('images/produk/' . $heroProduk->gambar) }}"
+                        src="{{ $heroProduk->gambar_url }}"
                         alt="{{ $heroProduk->nama_kue }}"
                     >
                 @else
@@ -840,7 +840,7 @@
                         <div class="category-image">
                             @if(!empty($item->gambar))
                                 <img
-                                    src="{{ asset('images/produk/' . $item->gambar) }}"
+                                    src="{{ $item->gambar_url }}"
                                     alt="{{ $item->nama_kue }}"
                                 >
                             @else
@@ -883,7 +883,7 @@
                         <div class="product-image">
                             @if(!empty($item->gambar))
                                 <img
-                                    src="{{ asset('images/produk/' . $item->gambar) }}"
+                                    src="{{ $item->gambar_url }}"
                                     alt="{{ $item->nama_kue }}"
                                     loading="lazy"
                                 >

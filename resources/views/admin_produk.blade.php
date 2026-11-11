@@ -522,7 +522,7 @@
                                 @if($item->gambar)
 
                                     <img
-                                        src="{{ asset('images/produk/' . $item->gambar) }}"
+                                        src="{{ $item->gambar_url }}"
                                         alt="{{ $item->nama_kue }}"
                                         class="product-image"
                                     >

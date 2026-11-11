@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Produk;
 use App\Models\UkuranProduk;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class AdminProdukController extends Controller
@@ -54,18 +54,20 @@ class AdminProdukController extends Controller
         $namaGambar = null;
 
         if ($request->hasFile('gambar')) {
-            $folder = public_path('images/produk');
-
-            if (!File::exists($folder)) {
-                File::makeDirectory($folder, 0755, true);
-            }
-
             $file = $request->file('gambar');
 
             $namaGambar = time() . '_' . uniqid() . '.' .
                 $file->getClientOriginalExtension();
 
-            $file->move($folder, $namaGambar);
+            $pathGambar = $file->storeAs(
+                'images/produk',
+                $namaGambar,
+                'public'
+            );
+
+            if ($pathGambar === false) {
+                throw new \RuntimeException('Gambar produk gagal disimpan.');
+            }
         }
 
         $daftarUkuran = array_values($validated['ukuran_produk']);
@@ -145,18 +147,20 @@ class AdminProdukController extends Controller
         $gambarLama = $produk->gambar;
 
         if ($request->hasFile('gambar')) {
-            $folder = public_path('images/produk');
-
-            if (!File::exists($folder)) {
-                File::makeDirectory($folder, 0755, true);
-            }
-
             $file = $request->file('gambar');
 
             $namaGambar = time() . '_' . uniqid() . '.' .
                 $file->getClientOriginalExtension();
 
-            $file->move($folder, $namaGambar);
+            $pathGambar = $file->storeAs(
+                'images/produk',
+                $namaGambar,
+                'public'
+            );
+
+            if ($pathGambar === false) {
+                throw new \RuntimeException('Gambar produk gagal disimpan.');
+            }
         }
 
         DB::transaction(function () use (
@@ -204,12 +208,10 @@ class AdminProdukController extends Controller
         });
 
         // Hapus gambar lama setelah data berhasil diperbarui.
-        if (
-            $request->hasFile('gambar') &&
-            $gambarLama &&
-            File::exists(public_path('images/produk/' . $gambarLama))
-        ) {
-            File::delete(public_path('images/produk/' . $gambarLama));
+        if ($request->hasFile('gambar') && $gambarLama) {
+            Storage::disk('public')->delete(
+                'images/produk/' . $gambarLama
+            );
         }
 
         return redirect()
@@ -232,12 +234,9 @@ class AdminProdukController extends Controller
         }
 
         // Hapus file gambar produk jika ada.
-        if (
-            $produk->gambar &&
-            File::exists(public_path('images/produk/' . $produk->gambar))
-        ) {
-            File::delete(
-                public_path('images/produk/' . $produk->gambar)
+        if ($produk->gambar) {
+            Storage::disk('public')->delete(
+                'images/produk/' . $produk->gambar
             );
         }
 

@@ -344,7 +344,7 @@
                     <p style="margin-bottom: 8px;">Gambar saat ini:</p>
 
                     <img
-                        src="{{ asset('images/produk/' . $produk->gambar) }}"
+                        src="{{ $produk->gambar_url }}"
                         alt="{{ $produk->nama_kue }}"
                     >
                 </div>

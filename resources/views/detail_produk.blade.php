@@ -613,7 +613,7 @@
 
                 @if($produk->gambar)
                     <img
-                        src="{{ asset('images/produk/' . $produk->gambar) }}"
+                        src="{{ $produk->gambar_url }}"
                         alt="{{ $produk->nama_kue }}"
                     >
                 @else
