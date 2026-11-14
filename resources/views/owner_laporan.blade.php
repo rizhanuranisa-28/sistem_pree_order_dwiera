@@ -356,6 +356,7 @@
 </head>
 
 <body>
+    @include('partials.mobile_bottom_nav')
 
     <nav>
 

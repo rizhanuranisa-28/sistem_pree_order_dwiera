@@ -680,6 +680,7 @@
 </head>
 
 <body>
+    @include('partials.mobile_bottom_nav')
 
     <!-- BARU: BAR ATAS + MENU TITIK TIGA (HP) -->
     <div class="mobile-bar">

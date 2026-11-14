@@ -537,6 +537,7 @@
 </head>
 
 <body>
+@include('partials.mobile_bottom_nav')
 
 <div class="mobile-bar">
     <img src="{{ asset('images/logo_dwiera_jpg.jpeg') }}" alt="Logo Dwiera">

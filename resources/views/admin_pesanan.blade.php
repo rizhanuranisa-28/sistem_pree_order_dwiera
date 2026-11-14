@@ -299,6 +299,7 @@
 </head>
 
 <body>
+    @include('partials.mobile_bottom_nav')
 
     <div class="navbar">
         <h2>Dwiera Cake</h2>

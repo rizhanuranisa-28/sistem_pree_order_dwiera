@@ -477,6 +477,7 @@
 </head>
 
 <body>
+@include('partials.mobile_bottom_nav')
 
 @php
 $pesananTerbaru = \App\Models\Pesanan::with([

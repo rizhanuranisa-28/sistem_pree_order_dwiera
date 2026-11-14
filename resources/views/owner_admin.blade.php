@@ -274,6 +274,7 @@
 </head>
 
 <body>
+    @include('partials.mobile_bottom_nav')
 
     <div class="mobile-bar">
         <div class="mobile-logo">Dwiera</div>

@@ -491,6 +491,7 @@
 </head>
 
 <body>
+@include('partials.mobile_bottom_nav')
 
 <!-- MENU MOBILE -->
 <div class="mobile-bar">

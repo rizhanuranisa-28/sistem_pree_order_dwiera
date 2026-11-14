@@ -425,6 +425,7 @@
 </head>
 
 <body>
+    @include('partials.mobile_bottom_nav')
 
     <!-- SIDEBAR -->
     <aside class="sidebar">
