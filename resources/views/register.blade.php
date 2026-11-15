@@ -122,6 +122,53 @@
             box-shadow: 0 0 0 3px rgba(201, 134, 153, 0.12);
         }
 
+        .password-wrap {
+            position: relative;
+        }
+
+        .password-wrap input {
+            padding-right: 48px;
+        }
+
+        .toggle-pass {
+            position: absolute;
+            top: 50%;
+            right: 8px;
+            display: flex;
+            width: 34px;
+            height: 34px;
+            align-items: center;
+            justify-content: center;
+            transform: translateY(-50%);
+            border: 0;
+            border-radius: 8px;
+            background: transparent;
+            color: #999;
+            cursor: pointer;
+        }
+
+        .toggle-pass:hover {
+            background: #fff0f4;
+            color: #b87287;
+        }
+
+        .toggle-pass svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .toggle-pass .icon-off {
+            display: none;
+        }
+
+        .toggle-pass.showing .icon-on {
+            display: none;
+        }
+
+        .toggle-pass.showing .icon-off {
+            display: block;
+        }
+
         .register-button {
             display: block;
             width: 100%;
@@ -329,30 +376,71 @@
 
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        placeholder="Masukkan password"
-                        minlength="6"
-                        autocomplete="new-password"
-                        required
-                    >
+                    <div class="password-wrap">
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Masukkan password"
+                            minlength="6"
+                            autocomplete="new-password"
+                            required
+                        >
+                        <button type="button" class="toggle-pass" data-target="password"
+                                aria-label="Tampilkan password" aria-controls="password"
+                                aria-pressed="false">
+                            <svg class="icon-on" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="2"
+                                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            <svg class="icon-off" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="2"
+                                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                                <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/>
+                                <line x1="1" y1="1" x2="23" y2="23"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="password_confirmation">
                         Konfirmasi Password
                     </label>
-                    <input
-                        type="password"
-                        id="password_confirmation"
-                        name="password_confirmation"
-                        placeholder="Ulangi password"
-                        minlength="6"
-                        autocomplete="new-password"
-                        required
-                    >
+                    <div class="password-wrap">
+                        <input
+                            type="password"
+                            id="password_confirmation"
+                            name="password_confirmation"
+                            placeholder="Ulangi password"
+                            minlength="6"
+                            autocomplete="new-password"
+                            required
+                        >
+                        <button type="button" class="toggle-pass"
+                                data-target="password_confirmation"
+                                aria-label="Tampilkan password" aria-controls="password_confirmation"
+                                aria-pressed="false">
+                            <svg class="icon-on" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="2"
+                                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            <svg class="icon-off" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="2"
+                                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                                <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/>
+                                <line x1="1" y1="1" x2="23" y2="23"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
                 <button type="submit" class="register-button">
@@ -367,5 +455,21 @@
         </div>
 
     </div>
+    <script>
+        document.querySelectorAll('.toggle-pass').forEach(function (button) {
+            button.addEventListener('click', function () {
+                var input = document.getElementById(button.dataset.target);
+                var isShowing = input.type === 'password';
+
+                input.type = isShowing ? 'text' : 'password';
+                button.classList.toggle('showing', isShowing);
+                button.setAttribute('aria-pressed', String(isShowing));
+                button.setAttribute(
+                    'aria-label',
+                    isShowing ? 'Sembunyikan password' : 'Tampilkan password'
+                );
+            });
+        });
+    </script>
 </body>
 </html>

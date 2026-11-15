@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-```
+
 <title>Edit Produk - Dwiera</title>
 
 <style>
@@ -17,7 +17,7 @@
     }
 
     body {
-        background: #f8f8f8;
+        background: #fff7fa;
         color: #333;
     }
 
@@ -29,14 +29,16 @@
 
     .card {
         background: white;
-        border-radius: 12px;
+        border: 1px solid #f2dfe5;
+        border-radius: 15px;
         padding: 30px;
-        box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+        box-shadow: 0 3px 15px rgba(160, 80, 100, 0.08);
     }
 
     h1 {
         margin-bottom: 25px;
         font-size: 28px;
+        color: #444;
     }
 
     .form-group {
@@ -54,9 +56,17 @@
     select {
         width: 100%;
         padding: 12px;
-        border: 1px solid #ddd;
+        border: 1px solid #eadde2;
         border-radius: 8px;
         font-size: 15px;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+        border-color: #d66f8d;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(214, 111, 141, 0.12);
     }
 
     textarea {
@@ -65,11 +75,11 @@
     }
 
     .ukuran-card {
-        border: 1px solid #ead5df;
+        border: 1px solid #f0dfe5;
         border-radius: 10px;
         padding: 18px;
         margin-bottom: 15px;
-        background: #fffafd;
+        background: #fff7fa;
     }
 
     .ukuran-title {
@@ -85,13 +95,18 @@
     }
 
     .btn-add {
-        background: #d979a0;
+        background: #d66f8d;
         color: white;
         border: none;
         padding: 11px 16px;
         border-radius: 8px;
         cursor: pointer;
         margin-bottom: 20px;
+    }
+
+    .btn-add:hover,
+    .btn-save:hover {
+        background: #c9577c;
     }
 
     .btn-remove {
@@ -113,7 +128,7 @@
         height: 150px;
         object-fit: cover;
         border-radius: 10px;
-        border: 1px solid #ddd;
+        border: 1px solid #f0dfe5;
     }
 
     .error {
@@ -138,18 +153,22 @@
     }
 
     .btn-save {
-        background: #111;
+        background: #d66f8d;
         color: white;
     }
 
     .btn-cancel {
-        background: #eee;
-        color: #333;
+        background: #fff0f5;
+        color: #c66b88;
+    }
+
+    .btn-cancel:hover {
+        background: #f9dbe6;
     }
 
     .info {
-        background: #fff1f6;
-        color: #944766;
+        background: #fff0f5;
+        color: #a64d72;
         padding: 12px;
         border-radius: 8px;
         font-size: 14px;
@@ -175,7 +194,7 @@
         }
     }
 </style>
-```
+
 
 </head>
 
@@ -183,7 +202,7 @@
 
 <div class="container">
 
-```
+
 <div class="card">
 
     <h1>Edit Produk</h1>
@@ -388,7 +407,7 @@
     </form>
 
 </div>
-```
+
 
 </div>
 

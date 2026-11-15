@@ -48,6 +48,7 @@
         .menu a {
             display: flex;
             align-items: center;
+            gap: 10px;
             padding: 14px 16px;
             border-radius: 10px;
             text-decoration: none;
@@ -65,6 +66,13 @@
             background: #f8dce6;
             color: #c9577c;
             font-weight: bold;
+        }
+
+        .menu-icon {
+            width: 22px;
+            flex: 0 0 22px;
+            text-align: center;
+            font-size: 18px;
         }
 
         .logout {
@@ -432,18 +440,17 @@
         <div class="logo">Dwiera</div>
 
         <nav class="menu">
-            <a href="{{ route('owner') }}">Dashboard</a>
-            <a href="{{ route('owner.pesanan') }}">Rekap Pesanan</a>
-            <a href="{{ route('owner.laporan') }}">Laporan Penjualan</a>
-            <a href="{{ route('owner.grafik') }}" class="active">
-                Grafik Penjualan
-            </a>
+            <a href="{{ route('owner') }}"><span class="menu-icon">🏠</span><span>Dashboard</span></a>
+            <a href="{{ route('owner.pesanan') }}"><span class="menu-icon">📋</span><span>Data Pesanan</span></a>
+            <a href="{{ route('owner.produk') }}"><span class="menu-icon">🎂</span><span>Data Produk</span></a>
+            <a href="{{ route('owner.laporan') }}"><span class="menu-icon">📊</span><span>Laporan Penjualan</span></a>
+            <a href="{{ route('owner.admin') }}"><span class="menu-icon">👥</span><span>Kelola Admin</span></a>
         </nav>
 
         <div class="logout">
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
-                <button type="submit">Logout</button>
+                <button type="submit"><span class="menu-icon">🚪</span> Logout</button>
             </form>
         </div>
     </aside>

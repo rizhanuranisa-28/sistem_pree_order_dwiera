@@ -200,13 +200,11 @@
         }
     }
 </style>
-```
 
 </head>
 
 <body>
 
-```
 <nav>
     <div class="logo">Dwiera Cake</div>
 

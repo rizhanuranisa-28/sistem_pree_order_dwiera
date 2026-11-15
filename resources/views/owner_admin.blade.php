@@ -27,6 +27,7 @@
 
         .menu a {
             display: flex; align-items: center;
+            gap: 10px;
             padding: 14px 16px; border-radius: 10px;
             text-decoration: none; color: #666;
             font-size: 14px; transition: .2s;
@@ -34,6 +35,13 @@
 
         .menu a:hover { background: #fff0f4; color: #d46a8c; }
         .menu a.active { background: #f8dce6; color: #c9577c; font-weight: bold; }
+
+        .menu-icon {
+            width: 22px;
+            flex: 0 0 22px;
+            text-align: center;
+            font-size: 18px;
+        }
 
         .logout { position: absolute; bottom: 25px; left: 20px; right: 20px; }
 
@@ -284,11 +292,11 @@
                     aria-label="Buka menu" aria-expanded="false">⋮</button>
 
             <div class="dots-menu" id="dotsMenu">
-                <a href="{{ route('owner') }}">Dashboard</a>
-                <a href="{{ route('owner.pesanan') }}">Data Pesanan</a>
-                <a href="{{ route('owner.produk') }}">Data Produk</a>
-                <a href="{{ route('owner.laporan') }}">Laporan Penjualan</a>
-                <a href="{{ route('owner.admin') }}" class="active">Kelola Admin</a>
+                <a href="{{ route('owner') }}">🏠 Dashboard</a>
+                <a href="{{ route('owner.pesanan') }}">📋 Data Pesanan</a>
+                <a href="{{ route('owner.produk') }}">🎂 Data Produk</a>
+                <a href="{{ route('owner.laporan') }}">📊 Laporan Penjualan</a>
+                <a href="{{ route('owner.admin') }}" class="active">👥 Kelola Admin</a>
                 <hr>
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
@@ -302,16 +310,16 @@
         <div class="logo">Dwiera</div>
 
         <nav class="menu">
-            <a href="{{ route('owner') }}">Dashboard</a>
-            <a href="{{ route('owner.pesanan') }}">Data Pesanan</a>
-            <a href="{{ route('owner.produk') }}">Data Produk</a>
-            <a href="{{ route('owner.laporan') }}">Laporan Penjualan</a>
-            <a href="{{ route('owner.admin') }}" class="active">Kelola Admin</a>
+            <a href="{{ route('owner') }}"><span class="menu-icon">🏠</span><span>Dashboard</span></a>
+            <a href="{{ route('owner.pesanan') }}"><span class="menu-icon">📋</span><span>Data Pesanan</span></a>
+            <a href="{{ route('owner.produk') }}"><span class="menu-icon">🎂</span><span>Data Produk</span></a>
+            <a href="{{ route('owner.laporan') }}"><span class="menu-icon">📊</span><span>Laporan Penjualan</span></a>
+            <a href="{{ route('owner.admin') }}" class="active"><span class="menu-icon">👥</span><span>Kelola Admin</span></a>
         </nav>
 
         <form class="logout" action="{{ route('logout') }}" method="POST">
             @csrf
-            <button type="submit">Logout</button>
+            <button type="submit"><span class="menu-icon">🚪</span> Logout</button>
         </form>
     </aside>
 

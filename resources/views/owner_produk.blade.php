@@ -234,11 +234,11 @@
 
             <div class="dots-menu" id="dotsMenu">
 
-                <a href="{{ route('owner') }}">Dashboard</a>
-                <a href="{{ route('owner.pesanan') }}">Data Pesanan</a>
-                <a href="{{ route('owner.produk') }}" class="active">Data Produk</a>
-                <a href="{{ route('owner.laporan') }}">Laporan Penjualan</a>
-                <a href="{{ route('owner.admin') }}">Kelola Admin</a>
+                <a href="{{ route('owner') }}">🏠 Dashboard</a>
+                <a href="{{ route('owner.pesanan') }}">📋 Data Pesanan</a>
+                <a href="{{ route('owner.produk') }}" class="active">🎂 Data Produk</a>
+                <a href="{{ route('owner.laporan') }}">📊 Laporan Penjualan</a>
+                <a href="{{ route('owner.admin') }}">👥 Kelola Admin</a>
 
                 <hr>
 

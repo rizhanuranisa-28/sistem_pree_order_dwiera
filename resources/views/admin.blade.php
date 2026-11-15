@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-```
 <title>Dashboard Admin - Dwiera</title>
 
 <style>
@@ -123,12 +122,6 @@
         align-items: center;
         justify-content: space-between;
         z-index: 50;
-    }
-
-    .mobile-bar img {
-        height: 38px;
-        width: auto;
-        object-fit: contain;
     }
 
     .dots-wrap {
@@ -457,7 +450,13 @@
     @media (max-width: 500px) {
 
         .stats {
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .stat-card {
+            padding: 14px;
+            min-width: 0;
         }
 
         .topbar {
@@ -512,11 +511,6 @@ $pesananMenunggu = \App\Models\Pesanan::whereIn(
 <!-- ================= MOBILE BAR ================= -->
 
 <div class="mobile-bar">
-
-<img
-    src="{{ asset('images/logo_dwiera_jpg.jpeg') }}"
-    alt="Logo Dwiera"
->
 
 <div class="dots-wrap">
 
@@ -851,7 +845,6 @@ $pesananMenunggu = \App\Models\Pesanan::whereIn(
     </section>
 
 </main>
-```
 
 </div>
 

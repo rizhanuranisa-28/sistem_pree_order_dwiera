@@ -1,19 +1,18 @@
 @php
     if (request()->routeIs('admin*')) {
         $items = [
-            ['route' => 'admin', 'active' => 'admin', 'label' => 'Beranda', 'icon' => '⌂'],
+            ['route' => 'admin', 'active' => 'admin', 'label' => 'Beranda', 'icon' => '🏠'],
             ['route' => 'admin.pesanan', 'active' => 'admin.pesanan*', 'label' => 'Pesanan', 'icon' => '🛍'],
             ['route' => 'admin.produk', 'active' => 'admin.produk*', 'label' => 'Produk', 'icon' => '🎂'],
             ['route' => 'admin.pembayaran', 'active' => 'admin.pembayaran*', 'label' => 'Bayar', 'icon' => '💳'],
         ];
     } elseif (request()->routeIs('owner*')) {
         $items = [
-            ['route' => 'owner', 'active' => 'owner', 'label' => 'Beranda', 'icon' => '⌂'],
+            ['route' => 'owner', 'active' => 'owner', 'label' => 'Beranda', 'icon' => '🏠'],
             ['route' => 'owner.pesanan', 'active' => 'owner.pesanan', 'label' => 'Pesanan', 'icon' => '🛍'],
             ['route' => 'owner.produk', 'active' => 'owner.produk', 'label' => 'Produk', 'icon' => '🎂'],
-            ['route' => 'owner.laporan', 'active' => 'owner.laporan*', 'label' => 'Laporan', 'icon' => '▤'],
-            ['route' => 'owner.grafik', 'active' => 'owner.grafik', 'label' => 'Grafik', 'icon' => '▥'],
-            ['route' => 'owner.admin', 'active' => 'owner.admin*', 'label' => 'Admin', 'icon' => '♙'],
+            ['route' => 'owner.laporan', 'active' => 'owner.laporan*', 'label' => 'Laporan', 'icon' => '📊'],
+            ['route' => 'owner.admin', 'active' => 'owner.admin*', 'label' => 'Admin', 'icon' => '👥'],
         ];
     } else {
         $items = [
@@ -125,7 +124,7 @@
     <form action="{{ route('logout') }}" method="POST">
         @csrf
         <button type="submit" aria-label="Logout" title="Logout">
-            <span class="nav-icon" aria-hidden="true">↪</span>
+            <span class="nav-icon" aria-hidden="true">🚪</span>
             <span class="nav-label">Logout</span>
         </button>
     </form>

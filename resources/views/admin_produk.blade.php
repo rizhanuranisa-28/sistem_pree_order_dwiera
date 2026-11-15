@@ -6,7 +6,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-```
 <title>Kelola Produk - Dwiera</title>
 
 <style>
@@ -18,7 +17,7 @@
     }
 
     body {
-        background: #f7f7f7;
+        background: #fff7fa;
         color: #333;
     }
 
@@ -32,8 +31,8 @@
     .sidebar {
         width: 235px;
         background: #ffffff;
-        border-right: 1px solid #eeeeee;
-        padding: 25px 15px;
+        border-right: 1px solid #f0dfe5;
+        padding: 25px 18px;
         position: fixed;
         top: 0;
         left: 0;
@@ -42,10 +41,11 @@
 
     .admin-label {
         text-align: center;
-        font-size: 16px;
+        font-size: 11px;
         font-weight: bold;
-        color: #5b3030;
-        margin-bottom: 35px;
+        color: #c66b88;
+        margin-bottom: 25px;
+        letter-spacing: 1px;
     }
 
     .menu {
@@ -56,7 +56,7 @@
 
     .menu a {
         text-decoration: none;
-        color: #555;
+        color: #777;
         padding: 13px 15px;
         border-radius: 10px;
         display: flex;
@@ -67,12 +67,13 @@
     }
 
     .menu a:hover {
-        background: #f5eeee;
+        background: #fff0f5;
+        color: #d66f8d;
     }
 
     .menu a.active {
-        background: #eadada;
-        color: #5b3030;
+        background: #f5b4c7;
+        color: white;
         font-weight: bold;
     }
 
@@ -91,7 +92,7 @@
         background: transparent;
         cursor: pointer;
         text-align: left;
-        color: #555;
+        color: #777;
         padding: 13px 15px;
         border-radius: 10px;
         display: flex;
@@ -101,7 +102,8 @@
     }
 
     .logout-button:hover {
-        background: #f5eeee;
+        background: #fff0f5;
+        color: #d66f8d;
     }
 
     /* MAIN */
@@ -122,7 +124,7 @@
 
     .topbar h1 {
         font-size: 27px;
-        color: #3d2525;
+        color: #444;
     }
 
     .topbar p {
@@ -132,7 +134,7 @@
     }
 
     .btn-add {
-        background: #6b3b3b;
+        background: #d66f8d;
         color: white;
         text-decoration: none;
         padding: 12px 18px;
@@ -143,7 +145,7 @@
     }
 
     .btn-add:hover {
-        background: #542d2d;
+        background: #c9577c;
     }
 
     /* ALERT */
@@ -170,7 +172,8 @@
 
     .card {
         background: white;
-        border-radius: 14px;
+        border: 1px solid #f2dfe5;
+        border-radius: 15px;
         padding: 22px;
         box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
         overflow-x: auto;
@@ -222,7 +225,7 @@
 
     .product-name {
         font-weight: bold;
-        color: #3d2525;
+        color: #444;
     }
 
     /* UKURAN DAN HARGA */
@@ -243,7 +246,7 @@
 
     .size-name {
         font-weight: bold;
-        color: #5b3030;
+        color: #444;
         margin-bottom: 4px;
     }
 
@@ -314,12 +317,12 @@
     }
 
     .btn-edit {
-        background: #eee5e5;
-        color: #5b3030;
+        background: #fff0f5;
+        color: #c66b88;
     }
 
     .btn-edit:hover {
-        background: #e3d7d7;
+        background: #f9dbe6;
     }
 
     .btn-delete {
@@ -369,42 +372,93 @@
     }
 
     @media (max-width: 600px) {
-        .sidebar {
-            width: 75px;
-            padding: 20px 8px;
-        }
-
-        .admin-label {
-            font-size: 10px;
-            margin-bottom: 25px;
-        }
-
-        .menu a {
-            justify-content: center;
-            padding: 12px 5px;
-        }
-
-        .menu a span:last-child {
-            display: none;
-        }
-
-        .logout-button {
-            justify-content: center;
-            padding: 12px 5px;
-        }
-
-        .logout-button span:last-child {
-            display: none;
-        }
-
         .main {
-            margin-left: 75px;
-            width: calc(100% - 75px);
-            padding: 18px;
+            margin-left: 0;
+            width: 100%;
+            padding: 78px 14px 90px;
+        }
+
+        .topbar {
+            gap: 12px;
+        }
+
+        .topbar h1 {
+            font-size: 21px;
+        }
+
+        .btn-add {
+            padding: 10px 13px;
+            font-size: 13px;
+        }
+
+        .card {
+            padding: 10px;
+            overflow: visible;
+        }
+
+        table {
+            min-width: 0;
+        }
+
+        thead {
+            display: none;
+        }
+
+        tbody,
+        tbody tr,
+        tbody td {
+            display: block;
+            width: 100%;
+        }
+
+        tbody tr {
+            margin-bottom: 12px;
+            padding: 8px 11px;
+            border: 1px solid #f0dfe5;
+            border-radius: 12px;
+            background: #fff;
+        }
+
+        tbody tr:last-child {
+            margin-bottom: 0;
+        }
+
+        tbody td {
+            display: grid;
+            grid-template-columns: 84px minmax(0, 1fr);
+            align-items: center;
+            gap: 8px;
+            padding: 9px 0;
+            border-bottom: 1px solid #f5e8ec;
+            overflow-wrap: anywhere;
+        }
+
+        tbody td:last-child {
+            border-bottom: 0;
+        }
+
+        tbody td::before {
+            content: attr(data-label);
+            color: #888;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .product-image,
+        .no-image {
+            width: 48px;
+            height: 48px;
+        }
+
+        .size-list {
+            min-width: 0;
+        }
+
+        .actions {
+            flex-wrap: wrap;
         }
     }
 </style>
-```
 
 </head>
 
@@ -413,7 +467,6 @@
 
 <div class="layout">
 
-```
 <!-- SIDEBAR -->
 
 <aside class="sidebar">
@@ -519,7 +572,7 @@
 
                             <!-- GAMBAR -->
 
-                            <td>
+                            <td data-label="Gambar">
                                 @if($item->gambar)
 
                                     <img
@@ -539,7 +592,7 @@
 
                             <!-- NAMA KUE -->
 
-                            <td>
+                            <td data-label="Nama Kue">
                                 <span class="product-name">
                                     {{ $item->nama_kue }}
                                 </span>
@@ -547,7 +600,7 @@
 
                             <!-- UKURAN DAN HARGA -->
 
-                            <td>
+                            <td data-label="Ukuran dan Harga">
 
                                 <div class="size-list">
 
@@ -583,7 +636,7 @@
 
                             <!-- STATUS PRODUK -->
 
-                            <td>
+                            <td data-label="Status Produk">
 
                                 @if(strtolower($item->status) === 'aktif')
 
@@ -603,7 +656,7 @@
 
                             <!-- AKSI -->
 
-                            <td>
+                            <td data-label="Aksi">
 
                                 <div class="actions">
 
@@ -659,7 +712,6 @@
     </div>
 
 </main>
-```
 
 </div>
 

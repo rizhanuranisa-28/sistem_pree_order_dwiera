@@ -35,6 +35,50 @@ class AdminPembayaranController extends Controller
     }
 
     /**
+     * Menampilkan bukti pembayaran untuk admin tanpa bergantung pada symlink storage.
+     */
+    public function bukti($id)
+    {
+        $pembayaran = Pembayaran::findOrFail($id);
+        $path = trim(
+            str_replace('\\', '/', (string) $pembayaran->bukti_pembayaran),
+            '/'
+        );
+
+        $normalizedPath = '/' . $path;
+        foreach ([
+            '/storage/app/public/',
+            '/public/storage/',
+            '/app/public/',
+            '/storage/',
+        ] as $prefix) {
+            $position = strrpos($normalizedPath, $prefix);
+            if ($position !== false) {
+                $path = substr(
+                    $normalizedPath,
+                    $position + strlen($prefix)
+                );
+                break;
+            }
+        }
+
+        if (str_starts_with($path, 'public/')) {
+            $path = substr($path, strlen('public/'));
+        }
+
+        if (preg_match('#^bukti/[^/]+$#', $path)) {
+            abort_unless(Storage::disk('public')->exists($path), 404);
+
+            return Storage::disk('public')->response($path);
+        }
+
+        $legacyPath = public_path('images/bukti/' . basename($path));
+        abort_unless(is_file($legacyPath), 404);
+
+        return response()->file($legacyPath);
+    }
+
+    /**
      * Upload bukti transfer oleh admin untuk pesanan offline.
      */
     public function uploadBukti(Request $request, $id)

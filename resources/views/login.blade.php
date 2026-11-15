@@ -356,9 +356,16 @@
             }
 
             .form-options {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 12px;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                gap: 8px;
+                font-size: 13px;
+            }
+
+            .remember,
+            .forgot {
+                white-space: nowrap;
             }
         }
     </style>
@@ -439,6 +446,9 @@
                             name="username"
                             placeholder="Masukkan username"
                             value="{{ old('username') }}"
+                            autocomplete="username"
+                            autocapitalize="none"
+                            spellcheck="false"
                             required
                         >
                     </div>
@@ -455,6 +465,7 @@
                             id="password"
                             name="password"
                             placeholder="Masukkan password"
+                            autocomplete="current-password"
                             required
                         >
 

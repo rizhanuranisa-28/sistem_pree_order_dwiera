@@ -102,6 +102,9 @@ Route::middleware(['auth', CekRole::class . ':admin'])->group(function () {
     Route::get('/admin/pembayaran', [AdminPembayaranController::class, 'index'])
         ->name('admin.pembayaran');
 
+    Route::get('/admin/pembayaran/{id}/bukti', [AdminPembayaranController::class, 'bukti'])
+        ->name('admin.pembayaran.bukti');
+
     Route::post('/admin/pembayaran/{id}/proses', [AdminPembayaranController::class, 'proses'])
         ->name('admin.pembayaran.proses');
 

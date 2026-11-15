@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tambah Produk - Dwiera</title>
 
-```
+
 <style>
     * {
         margin: 0;
@@ -353,7 +353,7 @@
         }
     }
 </style>
-```
+
 
 </head>
 
@@ -362,7 +362,7 @@
 
 <div class="layout">
 
-```
+
 <aside class="sidebar">
 
     <div class="admin-label">ADMIN PANEL</div>
@@ -646,7 +646,7 @@
     </div>
 
 </main>
-```
+
 
 </div>
 

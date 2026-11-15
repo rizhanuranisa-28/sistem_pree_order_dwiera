@@ -119,12 +119,6 @@
             z-index: 50;
         }
 
-        .mobile-bar img {
-            height: 38px;
-            width: auto;
-            object-fit: contain;
-        }
-
         .dots-wrap {
             position: relative;
         }
@@ -540,8 +534,6 @@
 @include('partials.mobile_bottom_nav')
 
 <div class="mobile-bar">
-    <img src="{{ asset('images/logo_dwiera_jpg.jpeg') }}" alt="Logo Dwiera">
-
     <div class="dots-wrap">
         <button type="button"
                 class="dots-btn"
@@ -726,10 +718,10 @@
                                     $urlBukti = null;
 
                                     if (!empty($pathBukti)) {
-                                        $pathBukti = str_replace('\\', '/', $pathBukti);
-                                        $urlBukti = str_starts_with($pathBukti, 'bukti/')
-                                            ? asset('storage/' . $pathBukti)
-                                            : asset('images/bukti/' . basename($pathBukti));
+                                        $urlBukti = route(
+                                            'admin.pembayaran.bukti',
+                                            $item->id_pembayaran
+                                        );
                                     }
                                 @endphp
 
