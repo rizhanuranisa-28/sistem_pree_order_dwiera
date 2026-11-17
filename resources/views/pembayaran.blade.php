@@ -321,10 +321,9 @@
             @elseif ($metode === 'qris')
 
                 <div class="payment-info">
-                    Silakan lakukan pembayaran dengan QRIS resmi Dwiera yang disediakan oleh toko.
-                    Setelah membayar, simpan foto atau tangkapan layar bukti pembayaran.
-                    Admin akan memeriksa dan memverifikasi bukti tersebut.
+                    Scan barcode QRIS Dwiera berikut untuk membayar, lalu unggah bukti agar dapat diverifikasi admin.
                 </div>
+                @include('partials.qris_code')
 
             @else
 

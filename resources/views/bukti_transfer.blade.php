@@ -126,8 +126,7 @@
 
             <div class="info">
                 @if (strtolower($pesanan->pembayaran->metode_pembayaran) === 'qris')
-                    Silakan bayar sesuai total di atas menggunakan QRIS resmi Dwiera yang disediakan oleh toko.
-                    Setelah membayar, foto atau screenshot bukti pembayaran dan unggah di bawah.
+                    Scan QRIS Dwiera berikut sesuai total pembayaran. Setelah berhasil, unggah foto atau screenshot bukti pembayaran.
                 @else
                     Transfer sesuai total di atas ke rekening pembayaran Dwiera,
                     lalu foto atau screenshot buktinya dan unggah di bawah.
@@ -148,6 +147,10 @@
                     </div>
                 @endif
             </div>
+
+            @if (strtolower($pesanan->pembayaran->metode_pembayaran) === 'qris')
+                @include('partials.qris_code')
+            @endif
 
             <form action="{{ route('pesanan.bukti', $pesanan->id_pesanan) }}"
                   method="POST" enctype="multipart/form-data" id="formBukti">
