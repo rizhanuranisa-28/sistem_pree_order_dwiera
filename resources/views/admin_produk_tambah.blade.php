@@ -338,8 +338,8 @@
         }
 
         .main {
-            margin-left: 70px;
-            width: calc(100% - 70px);
+            margin-left: 0;
+            width: 100%;
             padding: 20px;
         }
 
@@ -350,6 +350,58 @@
         .size-heading {
             align-items: flex-start;
             flex-direction: column;
+        }
+
+        .btn-add {
+            width: 100%;
+            min-height: 44px;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .main {
+            padding: 16px 12px 24px;
+        }
+
+        .topbar {
+            margin-bottom: 18px;
+        }
+
+        .topbar h1 {
+            font-size: 22px;
+        }
+
+        .topbar p {
+            line-height: 1.45;
+        }
+
+        .form-card {
+            padding: 16px;
+            border-radius: 12px;
+        }
+
+        .size-section {
+            padding: 12px;
+        }
+
+        .size-heading {
+            align-items: stretch;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .btn-save,
+        .btn-cancel {
+            width: 100%;
+            min-height: 44px;
+            text-align: center;
+        }
+
+        input[type="file"] {
+            padding: 10px 8px;
+            font-size: 12px;
         }
     }
 </style>
