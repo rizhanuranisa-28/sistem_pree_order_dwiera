@@ -165,7 +165,7 @@ class CheckoutController extends Controller
             ],
             'metode' => [
                 'required',
-                'in:cash,transfer',
+                'in:cash,tunai,transfer,qris',
             ],
             'catatan' => [
                 'nullable',
@@ -184,7 +184,9 @@ class CheckoutController extends Controller
 
         $tanggalPengambilan = $validated['tanggal_pengambilan'];
         $jamPengambilan = $validated['jam_pengambilan'];
-        $metode = $validated['metode'];
+        $metode = $validated['metode'] === 'tunai'
+            ? 'cash'
+            : $validated['metode'];
         $catatan = $validated['catatan'] ?? null;
 
         $nomorTelepon = Auth::user()->nomor_telepon ?? null;
@@ -326,7 +328,7 @@ class CheckoutController extends Controller
         // Kosongkan keranjang setelah transaksi berhasil.
         session()->forget('keranjang');
 
-        if ($metode === 'transfer') {
+        if (in_array($metode, ['transfer', 'qris'], true)) {
             return redirect()->route(
                 'pesanan.bukti.form',
                 $pesanan->id_pesanan

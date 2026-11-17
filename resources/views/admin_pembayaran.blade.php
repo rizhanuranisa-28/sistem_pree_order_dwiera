@@ -656,7 +656,7 @@
                 <div>
                     <h2>Daftar Pembayaran</h2>
                     <p>
-                        Upload bukti transfer pesanan offline, periksa bukti,
+                        Upload bukti transfer atau QRIS pesanan offline, periksa bukti,
                         atau konfirmasi pembayaran.
                     </p>
                 </div>
@@ -686,6 +686,7 @@
 
                                 @php
                                     $metode = strtolower($item->metode_pembayaran ?? '');
+                                    $butuhBukti = in_array($metode, ['transfer', 'qris'], true);
                                     $totalBayar = (float) ($item->total_bayar ?? 0);
                                     $uangDibayarkan = (float) ($item->bayar ?? 0);
                                     $kembalian = (float) ($item->kembalian ?? 0);
@@ -782,13 +783,13 @@
                                         @if($lunas)
                                             <span class="status lunas">Lunas</span>
 
-                                        @elseif($metode === 'transfer' && $statusBukti === 'dikembalikan')
+                                        @elseif($butuhBukti && $statusBukti === 'dikembalikan')
                                             <span class="status dikembalikan">Bukti Dikembalikan</span>
 
-                                        @elseif($metode === 'transfer' && $statusBukti === 'diterima')
+                                        @elseif($butuhBukti && $statusBukti === 'diterima')
                                             <span class="status lunas">Bukti Diterima</span>
 
-                                        @elseif($metode === 'transfer' && empty($item->bukti_pembayaran))
+                                        @elseif($butuhBukti && empty($item->bukti_pembayaran))
                                             <span class="status belum">Belum Ada Bukti</span>
 
                                         @else
@@ -796,7 +797,7 @@
                                         @endif
 
                                         @if(
-                                            $metode === 'transfer'
+                                            $butuhBukti
                                             && $statusBukti === 'dikembalikan'
                                             && $alasanPengembalian
                                         )
@@ -813,10 +814,10 @@
                                                target="_blank"
                                                rel="noopener noreferrer">
                                                 <img src="{{ $urlBukti }}"
-                                                     alt="Bukti transfer"
+                                                     alt="Bukti {{ $metode === 'qris' ? 'QRIS' : 'transfer' }}"
                                                      class="proof-image">
                                             </a>
-                                        @elseif($metode === 'transfer')
+                                        @elseif($butuhBukti)
                                             <span style="color:#c27b25;font-size:12px;">
                                                 Belum ada bukti
                                             </span>
@@ -856,7 +857,7 @@
                                                 </button>
                                             </form>
 
-                                        @elseif($metode === 'transfer')
+                                        @elseif($butuhBukti)
 
                                             {{-- Upload bukti untuk pesanan offline yang belum lunas --}}
                                             @if($offline && !$lunas)
@@ -869,8 +870,8 @@
 
                                                     <label style="display:block;font-size:12px;margin-bottom:7px;color:#666;">
                                                         {{ empty($item->bukti_pembayaran)
-                                                            ? 'Pilih bukti transfer:'
-                                                            : 'Ganti bukti transfer:'
+                                                            ? 'Pilih bukti ' . ($metode === 'qris' ? 'QRIS:' : 'transfer:')
+                                                            : 'Ganti bukti ' . ($metode === 'qris' ? 'QRIS:' : 'transfer:')
                                                         }}
                                                     </label>
 
@@ -902,18 +903,18 @@
                                                       style="margin-top:10px;"
                                                       action="{{ route('admin.pembayaran.proses', $item->id_pembayaran) }}"
                                                       method="POST"
-                                                      onsubmit="return confirm('Pastikan dana transfer benar-benar sudah masuk. Konfirmasi pembayaran ini?')">
+                                                      onsubmit="return confirm('Pastikan dana {{ $metode === 'qris' ? 'QRIS' : 'transfer' }} benar-benar sudah masuk. Konfirmasi pembayaran ini?')">
                                                     @csrf
 
                                                     <button type="submit" class="btn btn-transfer">
-                                                        Konfirmasi Transfer
+                                                        Konfirmasi {{ $metode === 'qris' ? 'QRIS' : 'Transfer' }}
                                                     </button>
                                                 </form>
 
                                                 <form class="return-form"
                                                       action="{{ route('admin.pembayaran.kembalikan', $item->id_pembayaran) }}"
                                                       method="POST"
-                                                      onsubmit="return confirm('Yakin ingin mengembalikan bukti transfer ini?')">
+                                                      onsubmit="return confirm('Yakin ingin mengembalikan bukti pembayaran ini?')">
                                                     @csrf
 
                                                     <textarea
@@ -949,7 +950,7 @@
 
                                                 @if(!$offline)
                                                     <small class="small-note" style="color:#c27b25;">
-                                                        Menunggu bukti transfer pelanggan.
+                                                        Menunggu bukti {{ $metode === 'qris' ? 'QRIS' : 'transfer' }} pelanggan.
                                                     </small>
                                                 @endif
 

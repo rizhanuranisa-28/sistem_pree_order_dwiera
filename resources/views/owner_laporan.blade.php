@@ -607,10 +607,9 @@
 
                                 @if ($item->pembayaran)
 
-                                    {{ ucfirst(
-                                        $item->pembayaran
-                                            ->metode_pembayaran
-                                    ) }}
+                                    {{ strtolower($item->pembayaran->metode_pembayaran) === 'qris'
+                                        ? 'QRIS'
+                                        : ucfirst($item->pembayaran->metode_pembayaran) }}
 
                                 @else
 

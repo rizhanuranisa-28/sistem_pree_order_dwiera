@@ -69,7 +69,11 @@ class OwnerLaporanPdfController extends Controller
         // Rekap metode pembayaran dari transaksi lunas.
         $perMetode = [];
 
-        foreach (['cash' => 'Cash', 'transfer' => 'Transfer'] as $kunci => $namaMetode) {
+        foreach ([
+            'cash' => 'Cash',
+            'transfer' => 'Transfer',
+            'qris' => 'QRIS',
+        ] as $kunci => $namaMetode) {
             $kelompok = $lunasList->filter(
                 fn ($p) => strtolower(
                     (string) $p->pembayaran->metode_pembayaran

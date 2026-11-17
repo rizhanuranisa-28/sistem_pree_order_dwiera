@@ -310,13 +310,17 @@
                 <select id="metode_pembayaran"
                         name="metode_pembayaran" required>
                     <option value="">-- Pilih Pembayaran --</option>
-                    <option value="cash"
-                        {{ old('metode_pembayaran') === 'cash' ? 'selected' : '' }}>
-                        Cash / Tunai
+                    <option value="tunai"
+                        {{ in_array(old('metode_pembayaran'), ['cash', 'tunai'], true) ? 'selected' : '' }}>
+                        Tunai
                     </option>
                     <option value="transfer"
                         {{ old('metode_pembayaran') === 'transfer' ? 'selected' : '' }}>
                         Transfer Bank
+                    </option>
+                    <option value="qris"
+                        {{ old('metode_pembayaran') === 'qris' ? 'selected' : '' }}>
+                        QRIS
                     </option>
                 </select>
             </div>
@@ -336,9 +340,9 @@
                 </div>
             </div>
 
-            <div id="bagianTransfer" class="hidden">
+            <div id="bagianBukti" class="hidden">
                 <p class="hint">
-                    Pembayaran transfer harus dilengkapi bukti pembayaran
+                    Pembayaran transfer atau QRIS harus dilengkapi bukti pembayaran
                     dan diverifikasi admin melalui alur pembayaran yang tersedia.
                 </p>
             </div>
@@ -542,14 +546,14 @@
     }
 
     function aturMetodePembayaran() {
-        const cash = metode.value === 'cash';
-        const transfer = metode.value === 'transfer';
+        const cash = ['cash', 'tunai'].includes(metode.value);
+        const perluBukti = ['transfer', 'qris'].includes(metode.value);
 
         document.getElementById('bagianCash')
             .classList.toggle('hidden', !cash);
 
-        document.getElementById('bagianTransfer')
-            .classList.toggle('hidden', !transfer);
+        document.getElementById('bagianBukti')
+            .classList.toggle('hidden', !perluBukti);
 
         inputBayar.required = cash;
 

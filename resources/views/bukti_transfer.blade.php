@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unggah Bukti Transfer - Dwiera Cake</title>
+    <title>Unggah Bukti Pembayaran - Dwiera Cake</title>
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
@@ -91,9 +91,9 @@
     <div class="container">
         <div class="card">
 
-            <h1>Unggah Bukti Transfer</h1>
+            <h1>Unggah Bukti {{ strtolower($pesanan->pembayaran->metode_pembayaran) === 'qris' ? 'QRIS' : 'Transfer' }}</h1>
             <p class="subtitle">
-                Pesananmu sudah tercatat. Satu langkah lagi: unggah foto bukti transfer
+                Pesananmu sudah tercatat. Satu langkah lagi: unggah foto bukti pembayaran
                 supaya admin bisa memeriksa pembayaranmu.
             </p>
 
@@ -119,29 +119,34 @@
                 @endforeach
 
                 <div class="total">
-                    <span>Total Transfer</span>
+                    <span>Total Pembayaran</span>
                     <span>Rp{{ number_format($pesanan->pembayaran->total_bayar ?? $pesanan->total_harga, 0, ',', '.') }}</span>
                 </div>
             </div>
 
             <div class="info">
-                Transfer sesuai total di atas ke rekening pembayaran Dwiera,
-                lalu foto atau screenshot buktinya dan unggah di bawah.
-                <div class="account-details">
-                    <strong>Informasi Rekening Dwiera</strong>
-                    <div class="row">
-                        <span>Bank</span>
-                        <strong>{{ config('payment.bank') }}</strong>
+                @if (strtolower($pesanan->pembayaran->metode_pembayaran) === 'qris')
+                    Silakan bayar sesuai total di atas menggunakan QRIS resmi Dwiera yang disediakan oleh toko.
+                    Setelah membayar, foto atau screenshot bukti pembayaran dan unggah di bawah.
+                @else
+                    Transfer sesuai total di atas ke rekening pembayaran Dwiera,
+                    lalu foto atau screenshot buktinya dan unggah di bawah.
+                    <div class="account-details">
+                        <strong>Informasi Rekening Dwiera</strong>
+                        <div class="row">
+                            <span>Bank</span>
+                            <strong>{{ config('payment.bank') }}</strong>
+                        </div>
+                        <div class="row">
+                            <span>Atas Nama</span>
+                            <strong>{{ config('payment.account_name') }}</strong>
+                        </div>
+                        <div class="row">
+                            <span>Nomor Rekening</span>
+                            <strong>{{ config('payment.account_number') }}</strong>
+                        </div>
                     </div>
-                    <div class="row">
-                        <span>Atas Nama</span>
-                        <strong>{{ config('payment.account_name') }}</strong>
-                    </div>
-                    <div class="row">
-                        <span>Nomor Rekening</span>
-                        <strong>{{ config('payment.account_number') }}</strong>
-                    </div>
-                </div>
+                @endif
             </div>
 
             <form action="{{ route('pesanan.bukti', $pesanan->id_pesanan) }}"
@@ -150,11 +155,11 @@
 
                 <input type="hidden" name="lanjut" value="1">
 
-                <label for="bukti">Foto Bukti Transfer</label>
+                <label for="bukti">Foto Bukti Pembayaran</label>
                 <input type="file" id="bukti" name="bukti" accept=".jpg,.jpeg,.png,.webp" required>
                 <div class="hint">Format JPG, JPEG, PNG, atau WEBP. Maksimal 2 MB.</div>
 
-                <img id="preview" class="preview" alt="Pratinjau bukti transfer">
+                <img id="preview" class="preview" alt="Pratinjau bukti pembayaran">
 
                 <button type="submit" class="btn" id="tombol">Unggah dan Selesai</button>
             </form>

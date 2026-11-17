@@ -532,7 +532,9 @@
                 </td>
 
                 <td>
-                    {{ ucfirst($p->pembayaran->metode_pembayaran) }}
+                    {{ strtolower($p->pembayaran->metode_pembayaran) === 'qris'
+                        ? 'QRIS'
+                        : ucfirst($p->pembayaran->metode_pembayaran) }}
                 </td>
 
                 <td class="kanan">

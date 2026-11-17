@@ -366,7 +366,9 @@
                                 </td>
 
                                 <td>
-                                    {{ ucfirst($item->pembayaran->metode_pembayaran ?? '-') }}
+                                    {{ strtolower($item->pembayaran->metode_pembayaran ?? '') === 'qris'
+                                        ? 'QRIS'
+                                        : ucfirst($item->pembayaran->metode_pembayaran ?? '-') }}
                                 </td>
 
                                 <!-- BARU: catatan pesanan -->

@@ -53,9 +53,13 @@ class AdminTambahPesananController extends Controller
 
             'catatan' => 'nullable|string|max:1000',
 
-            'metode_pembayaran' => 'required|in:cash,transfer',
-            'jumlah_bayar' => 'required_if:metode_pembayaran,cash|nullable|numeric|min:0',
+            'metode_pembayaran' => 'required|in:cash,tunai,transfer,qris',
+            'jumlah_bayar' => 'required_if:metode_pembayaran,cash,tunai|nullable|numeric|min:0',
         ]);
+
+        if ($validated['metode_pembayaran'] === 'tunai') {
+            $validated['metode_pembayaran'] = 'cash';
+        }
 
         /*
          * Kunci slot berdasarkan tanggal dan jam.

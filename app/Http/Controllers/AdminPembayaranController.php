@@ -79,7 +79,7 @@ class AdminPembayaranController extends Controller
     }
 
     /**
-     * Upload bukti transfer oleh admin untuk pesanan offline.
+     * Upload bukti transfer atau QRIS oleh admin untuk pesanan offline.
      */
     public function uploadBukti(Request $request, $id)
     {
@@ -97,7 +97,7 @@ class AdminPembayaranController extends Controller
                 'max:5120',
             ],
         ], [
-            'bukti_pembayaran.required' => 'Pilih gambar bukti transfer terlebih dahulu.',
+            'bukti_pembayaran.required' => 'Pilih gambar bukti pembayaran terlebih dahulu.',
             'bukti_pembayaran.image' => 'File harus berupa gambar.',
             'bukti_pembayaran.mimes' => 'Format gambar harus JPG, JPEG, atau PNG.',
             'bukti_pembayaran.max' => 'Ukuran gambar maksimal 5 MB.',
@@ -106,13 +106,14 @@ class AdminPembayaranController extends Controller
         $pembayaran = Pembayaran::with('pesanan')
             ->findOrFail($id);
 
-        if (
-            strtolower((string) $pembayaran->metode_pembayaran)
-            !== 'transfer'
-        ) {
+        if (!in_array(
+            strtolower((string) $pembayaran->metode_pembayaran),
+            ['transfer', 'qris'],
+            true
+        )) {
             return redirect()
                 ->route('admin.pembayaran')
-                ->with('error', 'Upload bukti hanya berlaku untuk pembayaran transfer.');
+                ->with('error', 'Upload bukti hanya berlaku untuk pembayaran transfer atau QRIS.');
         }
 
         if ($pembayaran->tanggal_bayar !== null) {
@@ -159,12 +160,13 @@ class AdminPembayaranController extends Controller
                     ]);
                 }
 
-                if (
-                    strtolower((string) $data->metode_pembayaran)
-                    !== 'transfer'
-                ) {
+                if (!in_array(
+                    strtolower((string) $data->metode_pembayaran),
+                    ['transfer', 'qris'],
+                    true
+                )) {
                     throw ValidationException::withMessages([
-                        'pembayaran' => 'Upload bukti hanya berlaku untuk pembayaran transfer.',
+                        'pembayaran' => 'Upload bukti hanya berlaku untuk pembayaran transfer atau QRIS.',
                     ]);
                 }
 
@@ -232,12 +234,12 @@ class AdminPembayaranController extends Controller
             ->route('admin.pembayaran')
             ->with(
                 'success',
-                'Bukti transfer berhasil diunggah. Pastikan dana masuk sebelum mengonfirmasi pembayaran.'
+                'Bukti pembayaran berhasil diunggah. Pastikan dana masuk sebelum mengonfirmasi pembayaran.'
             );
     }
 
     /**
-     * Memproses pembayaran cash atau transfer.
+     * Memproses pembayaran cash, transfer, atau QRIS.
      */
     public function proses(Request $request, $id)
     {
@@ -257,7 +259,7 @@ class AdminPembayaranController extends Controller
 
         $metode = strtolower($pembayaran->metode_pembayaran ?? '');
 
-        if (!in_array($metode, ['cash', 'transfer'], true)) {
+        if (!in_array($metode, ['cash', 'transfer', 'qris'], true)) {
             return redirect()
                 ->route('admin.pembayaran')
                 ->with('error', 'Metode pembayaran tidak valid.');
@@ -271,13 +273,13 @@ class AdminPembayaranController extends Controller
                 ->with('error', 'Total tagihan tidak valid.');
         }
 
-        if ($metode === 'transfer') {
+        if (in_array($metode, ['transfer', 'qris'], true)) {
             if (empty($pembayaran->bukti_pembayaran)) {
                 return redirect()
                     ->route('admin.pembayaran')
                     ->with(
                         'error',
-                        'Belum ada bukti transfer yang diunggah.'
+                        'Belum ada bukti pembayaran yang diunggah.'
                     );
             }
 
@@ -286,7 +288,7 @@ class AdminPembayaranController extends Controller
                     ->route('admin.pembayaran')
                     ->with(
                         'error',
-                        'Bukti transfer harus berstatus menunggu sebelum dikonfirmasi.'
+                        'Bukti pembayaran harus berstatus menunggu sebelum dikonfirmasi.'
                     );
             }
 
@@ -326,14 +328,14 @@ class AdminPembayaranController extends Controller
             }
 
             if (
-                $metode === 'transfer' &&
+                in_array($metode, ['transfer', 'qris'], true) &&
                 (
                     empty($data->bukti_pembayaran) ||
                     ($data->status_bukti ?? 'menunggu') !== 'menunggu'
                 )
             ) {
                 throw ValidationException::withMessages([
-                    'pembayaran' => 'Bukti transfer belum tersedia atau belum siap dikonfirmasi.',
+                    'pembayaran' => 'Bukti pembayaran belum tersedia atau belum siap dikonfirmasi.',
                 ]);
             }
 
@@ -342,13 +344,13 @@ class AdminPembayaranController extends Controller
                 'jumlah_bayar' => $diterima,
                 'bayar' => $bayar,
                 'kembalian' => $kembalian,
-                'status_bukti' => $metode === 'transfer'
+                'status_bukti' => in_array($metode, ['transfer', 'qris'], true)
                     ? 'diterima'
                     : $data->status_bukti,
                 'alasan_pengembalian' => null,
             ]);
 
-            if ($metode === 'transfer') {
+            if (in_array($metode, ['transfer', 'qris'], true)) {
                 RiwayatBuktiPembayaran::where(
                     'id_pembayaran',
                     $data->id_pembayaran
@@ -367,7 +369,7 @@ class AdminPembayaranController extends Controller
     }
 
     /**
-     * Mengembalikan bukti transfer dengan alasan.
+     * Mengembalikan bukti transfer atau QRIS dengan alasan.
      */
     public function kembalikan(Request $request, $id)
     {
@@ -401,18 +403,19 @@ class AdminPembayaranController extends Controller
                 ]);
             }
 
-            if (
-                strtolower((string) $data->metode_pembayaran)
-                !== 'transfer'
-            ) {
+            if (!in_array(
+                strtolower((string) $data->metode_pembayaran),
+                ['transfer', 'qris'],
+                true
+            )) {
                 throw ValidationException::withMessages([
-                    'pembayaran' => 'Pengembalian bukti hanya berlaku untuk pembayaran transfer.',
+                    'pembayaran' => 'Pengembalian bukti hanya berlaku untuk pembayaran transfer atau QRIS.',
                 ]);
             }
 
             if (empty($data->bukti_pembayaran)) {
                 throw ValidationException::withMessages([
-                    'pembayaran' => 'Belum ada bukti transfer untuk dikembalikan.',
+                    'pembayaran' => 'Belum ada bukti pembayaran untuk dikembalikan.',
                 ]);
             }
 
@@ -444,7 +447,7 @@ class AdminPembayaranController extends Controller
             ->route('admin.pembayaran')
             ->with(
                 'success',
-                'Bukti transfer berhasil dikembalikan.'
+                'Bukti pembayaran berhasil dikembalikan.'
             );
     }
 }

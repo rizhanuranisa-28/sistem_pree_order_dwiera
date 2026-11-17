@@ -40,7 +40,9 @@ class PembayaranController extends Controller
         $tanggalPengambilan = $request->query('tanggal_pengambilan');
         $jamPengambilan = $request->query('jam_pengambilan');
         $catatan = $request->query('catatan');
-        $metode = $request->query('metode');
+        $metode = $request->query('metode') === 'tunai'
+            ? 'cash'
+            : $request->query('metode');
 
         if ($jumlah < 1 || $jumlah > 100) {
             return redirect()
@@ -115,7 +117,7 @@ class PembayaranController extends Controller
             ],
             'metode' => [
                 'required',
-                'in:cash,transfer',
+                'in:cash,tunai,transfer,qris',
             ],
             'catatan' => [
                 'nullable',
@@ -141,7 +143,9 @@ class PembayaranController extends Controller
         $jumlah = (int) $validated['jumlah'];
         $tanggalPengambilan = $validated['tanggal_pengambilan'];
         $jamPengambilan = $validated['jam_pengambilan'];
-        $metode = $validated['metode'];
+        $metode = $validated['metode'] === 'tunai'
+            ? 'cash'
+            : $validated['metode'];
         $catatan = $validated['catatan'] ?? null;
 
         $nomorTelepon = Auth::user()->nomor_telepon ?? null;
@@ -253,8 +257,8 @@ class PembayaranController extends Controller
             }
         );
 
-        // Transfer: lanjut ke unggah bukti pembayaran.
-        if ($metode === 'transfer') {
+        // Transfer dan QRIS diverifikasi melalui unggah bukti pembayaran.
+        if (in_array($metode, ['transfer', 'qris'], true)) {
             return redirect()->route(
                 'pesanan.bukti.form',
                 $pesanan->id_pesanan

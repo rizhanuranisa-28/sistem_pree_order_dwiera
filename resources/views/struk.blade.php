@@ -319,7 +319,9 @@
 
     <div class="row">
         <span>Metode</span>
-        <span>{{ ucfirst($pembayaran->metode_pembayaran ?? '-') }}</span>
+        <span>{{ strtolower($pembayaran->metode_pembayaran ?? '') === 'qris'
+            ? 'QRIS'
+            : ucfirst($pembayaran->metode_pembayaran ?? '-') }}</span>
     </div>
 
     <div class="row">

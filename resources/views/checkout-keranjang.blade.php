@@ -313,12 +313,16 @@
             >
                 <option value="">-- Pilih Pembayaran --</option>
 
-                <option value="cash" {{ old('metode') === 'cash' ? 'selected' : '' }}>
-                    Cash / Tunai
+                <option value="tunai" {{ in_array(old('metode'), ['cash', 'tunai'], true) ? 'selected' : '' }}>
+                    Tunai
                 </option>
 
                 <option value="transfer" {{ old('metode') === 'transfer' ? 'selected' : '' }}>
                     Transfer Bank
+                </option>
+
+                <option value="qris" {{ old('metode') === 'qris' ? 'selected' : '' }}>
+                    QRIS
                 </option>
             </select>
 

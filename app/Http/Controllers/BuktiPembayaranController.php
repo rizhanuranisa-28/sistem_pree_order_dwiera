@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Storage;
 class BuktiPembayaranController extends Controller
 {
     /**
-     * Halaman unggah bukti transfer.
+     * Halaman unggah bukti transfer atau QRIS.
      */
     public function form($id)
     {
@@ -28,7 +28,11 @@ class BuktiPembayaranController extends Controller
 
         if (
             !$pembayaran ||
-            strtolower((string) $pembayaran->metode_pembayaran) !== 'transfer'
+            !in_array(
+                strtolower((string) $pembayaran->metode_pembayaran),
+                ['transfer', 'qris'],
+                true
+            )
         ) {
             return redirect()->route(
                 'pesanan.bukti.selesai',
@@ -56,7 +60,7 @@ class BuktiPembayaranController extends Controller
     }
 
     /**
-     * Pelanggan mengunggah atau memperbaiki bukti transfer.
+     * Pelanggan mengunggah atau memperbaiki bukti pembayaran.
      */
     public function upload(Request $request, $id)
     {
@@ -68,7 +72,7 @@ class BuktiPembayaranController extends Controller
                 'max:2048'
             ],
         ], [
-            'bukti.required' => 'Pilih foto bukti transfer terlebih dahulu.',
+            'bukti.required' => 'Pilih foto bukti pembayaran terlebih dahulu.',
             'bukti.image' => 'File harus berupa gambar.',
             'bukti.mimes' => 'Format foto harus JPG, JPEG, PNG, atau WEBP.',
             'bukti.max' => 'Ukuran foto maksimal 2 MB.',
@@ -83,13 +87,17 @@ class BuktiPembayaranController extends Controller
 
         if (
             !$pembayaran ||
-            strtolower((string) $pembayaran->metode_pembayaran) !== 'transfer'
+            !in_array(
+                strtolower((string) $pembayaran->metode_pembayaran),
+                ['transfer', 'qris'],
+                true
+            )
         ) {
             return redirect()
                 ->route('pesanan.pelanggan')
                 ->with(
                     'error',
-                    'Bukti pembayaran hanya untuk pesanan dengan metode transfer.'
+                    'Bukti pembayaran hanya untuk pesanan dengan metode transfer atau QRIS.'
                 );
         }
 
@@ -194,7 +202,7 @@ class BuktiPembayaranController extends Controller
             ->route('pesanan.pelanggan')
             ->with(
                 'success',
-                'Bukti transfer berhasil diunggah. Admin akan memeriksanya.'
+                'Bukti pembayaran berhasil diunggah. Admin akan memeriksanya.'
             );
     }
 }

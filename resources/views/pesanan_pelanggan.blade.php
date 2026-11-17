@@ -498,7 +498,9 @@
                     <div class="info-item">
                         Metode Pembayaran
                         <strong>
-                            {{ ucfirst($order->pembayaran->metode_pembayaran) }}
+                            {{ strtolower($order->pembayaran->metode_pembayaran) === 'qris'
+                                ? 'QRIS'
+                                : ucfirst($order->pembayaran->metode_pembayaran) }}
                         </strong>
                     </div>
                 @endif
@@ -538,10 +540,14 @@
                 </span>
             </div>
 
-            {{-- Informasi dan riwayat bukti transfer --}}
+            {{-- Informasi dan riwayat bukti transfer atau QRIS --}}
             @if(
                 $order->pembayaran
-                && strtolower((string) $order->pembayaran->metode_pembayaran) === 'transfer'
+                && in_array(
+                    strtolower((string) $order->pembayaran->metode_pembayaran),
+                    ['transfer', 'qris'],
+                    true
+                )
             )
 
                 @php
@@ -549,6 +555,9 @@
                     $sudahLunas = !empty($pembayaran->tanggal_bayar);
                     $bukti = $pembayaran->bukti_pembayaran;
                     $statusBukti = $pembayaran->status_bukti ?? 'menunggu';
+                    $namaMetodeBukti = strtolower($pembayaran->metode_pembayaran) === 'qris'
+                        ? 'QRIS'
+                        : 'transfer';
                     $alasanPengembalian = $pembayaran->alasan_pengembalian;
                     $riwayatBukti = $pembayaran->riwayatBukti ?? collect();
                     $buktiUrl = static function ($path) {
@@ -562,7 +571,7 @@
 
                 <div class="proof-box" style="margin-top: 20px;">
 
-                    <h3>Bukti Transfer</h3>
+                    <h3>Bukti {{ $namaMetodeBukti }}</h3>
 
                     {{-- Status bukti --}}
                     @if($sudahLunas)
@@ -590,19 +599,19 @@
                     {{-- Bukti terbaru --}}
                     @if($bukti)
                         <p class="proof-note">
-                            Bukti transfer terbaru:
+                            Bukti {{ $namaMetodeBukti }} terbaru:
                         </p>
 
                         <a href="{{ $buktiUrl($bukti) }}"
                            target="_blank"
                            rel="noopener noreferrer">
                             <img src="{{ $buktiUrl($bukti) }}"
-                                 alt="Bukti transfer terbaru"
+                                 alt="Bukti {{ $namaMetodeBukti }} terbaru"
                                  class="proof-img">
                         </a>
                     @else
                         <p class="proof-note">
-                            Belum ada bukti transfer yang diunggah.
+                            Belum ada bukti {{ $namaMetodeBukti }} yang diunggah.
                         </p>
                     @endif
 
@@ -615,7 +624,7 @@
                         </div>
 
                         <p class="proof-note">
-                            Silakan periksa alasan di atas, perbaiki bukti transfer kamu,
+                            Silakan periksa alasan di atas, perbaiki bukti pembayaran kamu,
                             lalu unggah kembali bukti yang benar.
                         </p>
                     @endif
@@ -641,9 +650,9 @@
                                 @if($statusBukti === 'dikembalikan')
                                     Unggah Ulang Bukti
                                 @elseif($bukti)
-                                    Ganti Bukti Transfer
+                                    Ganti Bukti {{ $namaMetodeBukti }}
                                 @else
-                                    Unggah Bukti Transfer
+                                    Unggah Bukti {{ $namaMetodeBukti }}
                                 @endif
                             </button>
 
@@ -667,7 +676,7 @@
 
                         <div class="history-box">
 
-                            <h3>Riwayat Bukti Transfer</h3>
+                            <h3>Riwayat Bukti {{ $namaMetodeBukti }}</h3>
 
                             <p class="proof-note">
                                 Bukti yang pernah diunggah tetap tersimpan di riwayat ini.
@@ -683,7 +692,7 @@
 
                                         <img
                                             src="{{ $buktiUrl($riwayat->nama_file) }}"
-                                            alt="Riwayat bukti transfer"
+                                            alt="Riwayat bukti {{ $namaMetodeBukti }}"
                                             class="history-thumb"
                                             loading="lazy"
                                         >

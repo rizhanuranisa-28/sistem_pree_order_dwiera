@@ -318,6 +318,14 @@
                     Setelah melakukan pembayaran, silakan simpan bukti transfer. Admin akan memeriksa dan memverifikasi pembayaran kamu.
                 </div>
 
+            @elseif ($metode === 'qris')
+
+                <div class="payment-info">
+                    Silakan lakukan pembayaran dengan QRIS resmi Dwiera yang disediakan oleh toko.
+                    Setelah membayar, simpan foto atau tangkapan layar bukti pembayaran.
+                    Admin akan memeriksa dan memverifikasi bukti tersebut.
+                </div>
+
             @else
 
                 <div class="payment-info">
