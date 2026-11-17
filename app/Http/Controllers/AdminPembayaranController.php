@@ -15,7 +15,7 @@ class AdminPembayaranController extends Controller
     /**
      * Menampilkan daftar pembayaran.
      */
-    public function index()
+    public function index(Request $request)
     {
         abort_unless(
             Auth::user()->role === 'admin',
@@ -23,15 +23,54 @@ class AdminPembayaranController extends Controller
             'Halaman ini hanya dapat diakses admin.'
         );
 
-        $pembayaran = Pembayaran::with([
+        $filters = $request->validate([
+            'metode_pembayaran' => [
+                'nullable',
+                'in:cash,qris,transfer',
+            ],
+            'status_pesanan' => [
+                'nullable',
+                'in:menunggu,dikonfirmasi,dibuat,siap_diambil,selesai',
+            ],
+        ]);
+
+        $filterMetode = $filters['metode_pembayaran'] ?? '';
+        $filterStatus = $filters['status_pesanan'] ?? '';
+
+        $query = Pembayaran::with([
             'pesanan.user',
             'pesanan.detailPesanans.produk',
             'riwayatBukti',
         ])
+            ->when(
+                $filterMetode !== '',
+                fn ($query) => $query->where(
+                    'metode_pembayaran',
+                    $filterMetode
+                )
+            )
+            ->when(
+                $filterStatus !== '',
+                fn ($query) => $query->whereHas(
+                    'pesanan',
+                    fn ($pesananQuery) => $pesananQuery->where(
+                        'status_pesanan',
+                        $filterStatus
+                    )
+                )
+            );
+
+        $totalNominal = (clone $query)->sum('total_bayar');
+        $pembayaran = (clone $query)
             ->orderByDesc('id_pembayaran')
             ->get();
 
-        return view('admin_pembayaran', compact('pembayaran'));
+        return view('admin_pembayaran', compact(
+            'pembayaran',
+            'totalNominal',
+            'filterMetode',
+            'filterStatus'
+        ));
     }
 
     /**

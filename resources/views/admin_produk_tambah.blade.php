@@ -502,7 +502,7 @@
 
                     @php
                         $ukuranLama = old('ukuran_produk', [
-                            ['nama_ukuran' => '', 'harga' => '', 'status' => 'aktif']
+                            ['nama_ukuran' => '', 'harga' => '', 'status' => 'tersedia']
                         ]);
                     @endphp
 
@@ -545,7 +545,7 @@
                             <input
                                 type="hidden"
                                 name="ukuran_produk[{{ $index }}][status]"
-                                value="aktif"
+                                value="tersedia"
                             >
 
                             <button
@@ -608,17 +608,17 @@
                 <select id="status" name="status" required>
 
                     <option
-                        value="aktif"
-                        {{ old('status', 'aktif') === 'aktif' ? 'selected' : '' }}
+                        value="tersedia"
+                        {{ old('status', 'tersedia') === 'tersedia' ? 'selected' : '' }}
                     >
-                        Aktif
+                        tersedia
                     </option>
 
                     <option
-                        value="nonaktif"
-                        {{ old('status') === 'nonaktif' ? 'selected' : '' }}
+                        value="habis"
+                        {{ old('status') === 'habis' ? 'selected' : '' }}
                     >
-                        Tidak Aktif
+                        Habis
                     </option>
 
                 </select>
@@ -690,7 +690,7 @@
             <input
                 type="hidden"
                 name="ukuran_produk[${nomorUkuran}][status]"
-                value="aktif"
+                value="tersedia"
             >
 
             <button

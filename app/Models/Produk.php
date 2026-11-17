@@ -48,6 +48,10 @@ class Produk extends Model
 
         $path = 'images/produk/' . $this->gambar;
 
+        if (is_file(public_path($path))) {
+            return asset($path);
+        }
+
         if (Storage::disk('public')->exists($path)) {
             return Storage::disk('public')->url($path);
         }

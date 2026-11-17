@@ -178,6 +178,77 @@
             background: #c9577c;
         }
 
+        .report-filter {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 12px;
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 15px;
+            background: white;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .report-filter-field {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 190px;
+        }
+
+        .report-filter-field label {
+            color: #555;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .report-filter-field select {
+            min-height: 40px;
+            padding: 9px 11px;
+            border: 1px solid #e8c5d2;
+            border-radius: 8px;
+            background: white;
+            color: #444;
+            font-size: 14px;
+            outline-color: #d46a8c;
+        }
+
+        .report-filter-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .report-filter-button,
+        .report-filter-reset {
+            display: inline-flex;
+            min-height: 40px;
+            align-items: center;
+            justify-content: center;
+            padding: 9px 16px;
+            border: 1px solid #d46a8c;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .report-filter-button {
+            background: #d46a8c;
+            color: white;
+        }
+
+        .report-filter-button:hover {
+            background: #c9577c;
+        }
+
+        .report-filter-reset {
+            background: white;
+            color: #c9577c;
+        }
+
         .stats {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -333,6 +404,28 @@
                 width: 100%;
             }
 
+            .report-filter {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .report-filter-field {
+                min-width: 100%;
+            }
+
+            .report-filter-field select {
+                width: 100%;
+            }
+
+            .report-filter-actions {
+                width: 100%;
+            }
+
+            .report-filter-button,
+            .report-filter-reset {
+                flex: 1;
+            }
+
             .stat-card {
                 padding: 22px;
             }
@@ -448,6 +541,60 @@
 
         </form>
 
+        <form
+            action="{{ route('owner.laporan') }}"
+            method="GET"
+            class="report-filter"
+        >
+            <div class="report-filter-field">
+                <label for="metode_pembayaran">Metode Pembayaran</label>
+                <select id="metode_pembayaran" name="metode_pembayaran">
+                    <option value="" {{ $filterMetode === '' ? 'selected' : '' }}>
+                        Semua Metode
+                    </option>
+                    <option value="cash" {{ $filterMetode === 'cash' ? 'selected' : '' }}>
+                        Tunai
+                    </option>
+                    <option value="qris" {{ $filterMetode === 'qris' ? 'selected' : '' }}>
+                        QRIS
+                    </option>
+                    <option value="transfer" {{ $filterMetode === 'transfer' ? 'selected' : '' }}>
+                        Transfer
+                    </option>
+                </select>
+            </div>
+
+            <div class="report-filter-field">
+                <label for="status_pesanan">Status Pesanan</label>
+                <select id="status_pesanan" name="status_pesanan">
+                    <option value="" {{ $filterStatus === '' ? 'selected' : '' }}>
+                        Semua Status
+                    </option>
+                    <option value="menunggu" {{ $filterStatus === 'menunggu' ? 'selected' : '' }}>
+                        Menunggu Konfirmasi
+                    </option>
+                    <option value="dikonfirmasi" {{ $filterStatus === 'dikonfirmasi' ? 'selected' : '' }}>
+                        Dikonfirmasi
+                    </option>
+                    <option value="dibuat" {{ $filterStatus === 'dibuat' ? 'selected' : '' }}>
+                        Sedang Dibuat
+                    </option>
+                    <option value="siap_diambil" {{ $filterStatus === 'siap_diambil' ? 'selected' : '' }}>
+                        Siap Diambil
+                    </option>
+                    <option value="selesai" {{ $filterStatus === 'selesai' ? 'selected' : '' }}>
+                        Selesai
+                    </option>
+                </select>
+            </div>
+
+            <div class="report-filter-actions">
+                <button class="report-filter-button" type="submit">Filter</button>
+                <a class="report-filter-reset" href="{{ route('owner.laporan') }}">
+                    Reset
+                </a>
+            </div>
+        </form>
 
         <div class="stats">
 

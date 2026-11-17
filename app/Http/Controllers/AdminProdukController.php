@@ -34,10 +34,10 @@ class AdminProdukController extends Controller
             'ukuran_produk' => 'required|array|min:1',
             'ukuran_produk.*.nama_ukuran' => 'required|string|max:50|distinct',
             'ukuran_produk.*.harga' => 'required|numeric|min:0',
-            'ukuran_produk.*.status' => 'nullable|in:aktif,nonaktif',
+            'ukuran_produk.*.status' => 'nullable|in:tersedia,habis',
 
             'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'status' => 'required|in:aktif,nonaktif',
+            'status' => 'required|in:tersedia,habis',
         ], [
             'nama_kue.required' => 'Nama kue wajib diisi.',
             'ukuran_produk.required' => 'Minimal harus ada satu ukuran.',
@@ -92,7 +92,7 @@ class AdminProdukController extends Controller
                 $produk->ukuranProduks()->create([
                     'nama_ukuran' => $ukuran['nama_ukuran'],
                     'harga' => $ukuran['harga'],
-                    'status' => $ukuran['status'] ?? 'aktif',
+                    'status' => $ukuran['status'] ?? 'tersedia',
                 ]);
             }
         });
@@ -123,10 +123,10 @@ class AdminProdukController extends Controller
             'ukuran_produk.*.id_ukuran' => 'nullable|integer',
             'ukuran_produk.*.nama_ukuran' => 'required|string|max:50|distinct',
             'ukuran_produk.*.harga' => 'required|numeric|min:0',
-            'ukuran_produk.*.status' => 'required|in:aktif,nonaktif',
+            'ukuran_produk.*.status' => 'required|in:tersedia,habis',
 
             'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'status' => 'required|in:aktif,nonaktif',
+            'status' => 'required|in:tersedia,habis',
         ], [
             'nama_kue.required' => 'Nama kue wajib diisi.',
             'ukuran_produk.required' => 'Minimal harus ada satu ukuran.',

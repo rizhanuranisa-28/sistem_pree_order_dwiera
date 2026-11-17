@@ -316,14 +316,14 @@
                                 <label>Status Ukuran</label>
 
                                 <select name="ukuran_produk[{{ $index }}][status]" required>
-                                    <option value="aktif"
-                                        {{ ($ukuran['status'] ?? 'aktif') == 'aktif' ? 'selected' : '' }}>
-                                        Aktif
+                                    <option value="tersedia"
+                                        {{ ($ukuran['status'] ?? 'tersedia') == 'tersedia' ? 'selected' : '' }}>
+                                        tersedia
                                     </option>
 
-                                    <option value="nonaktif"
-                                        {{ ($ukuran['status'] ?? '') == 'nonaktif' ? 'selected' : '' }}>
-                                        Nonaktif
+                                    <option value="habis"
+                                        {{ ($ukuran['status'] ?? '') == 'habis' ? 'selected' : '' }}>
+                                        habis
                                     </option>
                                 </select>
                             </div>
@@ -376,17 +376,17 @@
             <select id="status" name="status" required>
 
                 <option
-                    value="aktif"
-                    {{ old('status', $produk->status) == 'aktif' ? 'selected' : '' }}
+                    value="tersedia"
+                    {{ old('status', $produk->status) == 'tersedia' ? 'selected' : '' }}
                 >
-                    Aktif
+                    tersedia
                 </option>
 
                 <option
-                    value="nonaktif"
-                    {{ old('status', $produk->status) == 'nonaktif' ? 'selected' : '' }}
+                    value="habis"
+                    {{ old('status', $produk->status) == 'habis' ? 'selected' : '' }}
                 >
-                    Nonaktif
+                    Habis
                 </option>
 
             </select>
@@ -456,8 +456,8 @@
                     <label>Status Ukuran</label>
 
                     <select name="ukuran_produk[${indexUkuran}][status]" required>
-                        <option value="aktif" selected>Aktif</option>
-                        <option value="nonaktif">Nonaktif</option>
+                        <option value="tersedia" selected>tersedia</option>
+                        <option value="habis">Habis</option>
                     </select>
                 </div>
 

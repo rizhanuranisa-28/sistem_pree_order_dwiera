@@ -264,12 +264,12 @@
         border-radius: 10px;
     }
 
-    .size-status-aktif {
+    .size-status-tersedia {
         background: #e7f5e9;
         color: #2e7d32;
     }
 
-    .size-status-nonaktif {
+    .size-status-habis {
         background: #f8e4e4;
         color: #a33a3a;
     }
@@ -289,12 +289,12 @@
         font-weight: bold;
     }
 
-    .status-aktif {
+    .status-tersedia {
         background: #e7f5e9;
         color: #2e7d32;
     }
 
-    .status-nonaktif {
+    .status-habis {
         background: #f8e4e4;
         color: #a33a3a;
     }
@@ -616,7 +616,7 @@
                                                 Rp {{ number_format($ukuran->harga, 0, ',', '.') }}
                                             </div>
 
-                                            <span class="size-status {{ $ukuran->status === 'aktif' ? 'size-status-aktif' : 'size-status-nonaktif' }}">
+                                            <span class="size-status {{ $ukuran->status === 'tersedia' ? 'size-status-tersedia' : 'size-status-habis' }}">
                                                 {{ ucfirst($ukuran->status) }}
                                             </span>
 
@@ -638,16 +638,16 @@
 
                             <td data-label="Status Produk">
 
-                                @if(strtolower($item->status) === 'aktif')
+                                @if(strtolower($item->status) === 'tersedia')
 
-                                    <span class="status status-aktif">
-                                        Aktif
+                                    <span class="status status-tersedia">
+                                        tersedia
                                     </span>
 
                                 @else
 
-                                    <span class="status status-nonaktif">
-                                        Nonaktif
+                                    <span class="status status-habis">
+                                        Habis
                                     </span>
 
                                 @endif

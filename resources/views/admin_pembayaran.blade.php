@@ -265,6 +265,94 @@
             margin-top: 5px;
         }
 
+        .filter-panel {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding: 16px;
+            border: 1px solid #f2dfe5;
+            border-radius: 12px;
+            background: #fff9fb;
+        }
+
+        .filter-field {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 190px;
+        }
+
+        .filter-field label {
+            color: #777;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .filter-field select {
+            min-height: 40px;
+            padding: 9px 11px;
+            border: 1px solid #e8cbd5;
+            border-radius: 8px;
+            background: white;
+            color: #444;
+            outline-color: #d66f8d;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .filter-button,
+        .reset-button {
+            display: inline-flex;
+            min-height: 40px;
+            align-items: center;
+            justify-content: center;
+            padding: 9px 15px;
+            border: 1px solid #d66f8d;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .filter-button {
+            background: #d66f8d;
+            color: white;
+        }
+
+        .reset-button {
+            background: white;
+            color: #bd5978;
+        }
+
+        .summary-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 16px 18px;
+            border: 1px solid #f2dfe5;
+            border-radius: 12px;
+            background: #fff0f5;
+        }
+
+        .summary-label {
+            color: #777;
+            font-size: 13px;
+        }
+
+        .summary-value {
+            color: #bd5978;
+            font-size: 20px;
+        }
+
         .notice {
             padding: 12px 15px;
             border-radius: 8px;
@@ -526,6 +614,24 @@
             .content-card {
                 padding: 15px;
             }
+
+            .filter-field {
+                min-width: 100%;
+            }
+
+            .filter-actions {
+                width: 100%;
+            }
+
+            .filter-button,
+            .reset-button {
+                flex: 1;
+            }
+
+            .summary-card {
+                align-items: flex-start;
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -660,6 +766,70 @@
                         atau konfirmasi pembayaran.
                     </p>
                 </div>
+            </div>
+
+            <form
+                class="filter-panel"
+                action="{{ route('admin.pembayaran') }}"
+                method="GET"
+            >
+                <div class="filter-field">
+                    <label for="metode_pembayaran">Metode Pembayaran</label>
+                    <select id="metode_pembayaran" name="metode_pembayaran">
+                        <option value="" {{ $filterMetode === '' ? 'selected' : '' }}>
+                            Semua Metode
+                        </option>
+                        <option value="cash" {{ $filterMetode === 'cash' ? 'selected' : '' }}>
+                            Tunai
+                        </option>
+                        <option value="qris" {{ $filterMetode === 'qris' ? 'selected' : '' }}>
+                            QRIS
+                        </option>
+                        <option value="transfer" {{ $filterMetode === 'transfer' ? 'selected' : '' }}>
+                            Transfer
+                        </option>
+                    </select>
+                </div>
+
+                <div class="filter-field">
+                    <label for="status_pesanan">Status Pesanan</label>
+                    <select id="status_pesanan" name="status_pesanan">
+                        <option value="" {{ $filterStatus === '' ? 'selected' : '' }}>
+                            Semua Status
+                        </option>
+                        <option value="menunggu" {{ $filterStatus === 'menunggu' ? 'selected' : '' }}>
+                            Menunggu Konfirmasi
+                        </option>
+                        <option value="dikonfirmasi" {{ $filterStatus === 'dikonfirmasi' ? 'selected' : '' }}>
+                            Dikonfirmasi
+                        </option>
+                        <option value="dibuat" {{ $filterStatus === 'dibuat' ? 'selected' : '' }}>
+                            Sedang Dibuat
+                        </option>
+                        <option value="siap_diambil" {{ $filterStatus === 'siap_diambil' ? 'selected' : '' }}>
+                            Siap Diambil
+                        </option>
+                        <option value="selesai" {{ $filterStatus === 'selesai' ? 'selected' : '' }}>
+                            Selesai
+                        </option>
+                    </select>
+                </div>
+
+                <div class="filter-actions">
+                    <button class="filter-button" type="submit">Filter</button>
+                    <a class="reset-button" href="{{ route('admin.pembayaran') }}">
+                        Reset
+                    </a>
+                </div>
+            </form>
+
+            <div class="summary-card" aria-live="polite">
+                <span class="summary-label">
+                    Total nominal dari {{ $pembayaran->count() }} transaksi
+                </span>
+                <strong class="summary-value">
+                    Rp {{ number_format((float) $totalNominal, 0, ',', '.') }}
+                </strong>
             </div>
 
             <div class="table-wrapper">
@@ -977,7 +1147,7 @@
                 @else
 
                     <div class="empty">
-                        Belum ada data pembayaran.
+                        Data pembayaran tidak ditemukan untuk filter yang dipilih.
                     </div>
 
                 @endif
