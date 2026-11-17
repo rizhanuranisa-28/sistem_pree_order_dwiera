@@ -163,6 +163,17 @@
             font-size: 14px;
         }
 
+        .pdf-form select {
+            min-height: 39px;
+            padding: 9px 11px;
+            border: 1px solid #e8c5d2;
+            border-radius: 8px;
+            background: white;
+            color: #444;
+            font-size: 14px;
+            outline-color: #d46a8c;
+        }
+
         .pdf-form button {
             padding: 11px 20px;
             border: none;
@@ -400,6 +411,7 @@
             }
 
             .pdf-form input[type="date"],
+            .pdf-form select,
             .pdf-form button {
                 width: 100%;
             }
@@ -533,6 +545,48 @@
                     value="{{ now()->format('Y-m-d') }}"
                     required
                 >
+            </div>
+
+            <div>
+                <label for="pdf_metode_pembayaran">Metode pembayaran</label>
+                <select id="pdf_metode_pembayaran" name="metode_pembayaran">
+                    <option value="" {{ $filterMetode === '' ? 'selected' : '' }}>
+                        Semua Metode
+                    </option>
+                    <option value="cash" {{ $filterMetode === 'cash' ? 'selected' : '' }}>
+                        Tunai
+                    </option>
+                    <option value="qris" {{ $filterMetode === 'qris' ? 'selected' : '' }}>
+                        QRIS
+                    </option>
+                    <option value="transfer" {{ $filterMetode === 'transfer' ? 'selected' : '' }}>
+                        Transfer
+                    </option>
+                </select>
+            </div>
+
+            <div>
+                <label for="pdf_status_pesanan">Status pesanan</label>
+                <select id="pdf_status_pesanan" name="status_pesanan">
+                    <option value="" {{ $filterStatus === '' ? 'selected' : '' }}>
+                        Semua Status
+                    </option>
+                    <option value="menunggu" {{ $filterStatus === 'menunggu' ? 'selected' : '' }}>
+                        Menunggu Konfirmasi
+                    </option>
+                    <option value="dikonfirmasi" {{ $filterStatus === 'dikonfirmasi' ? 'selected' : '' }}>
+                        Dikonfirmasi
+                    </option>
+                    <option value="dibuat" {{ $filterStatus === 'dibuat' ? 'selected' : '' }}>
+                        Sedang Dibuat
+                    </option>
+                    <option value="siap_diambil" {{ $filterStatus === 'siap_diambil' ? 'selected' : '' }}>
+                        Siap Diambil
+                    </option>
+                    <option value="selesai" {{ $filterStatus === 'selesai' ? 'selected' : '' }}>
+                        Selesai
+                    </option>
+                </select>
             </div>
 
             <button type="submit">

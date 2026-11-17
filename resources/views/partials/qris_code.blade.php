@@ -28,7 +28,7 @@
 <div class="qris-payment" role="group" aria-label="Kode QRIS Dwiera Cake">
     <img
         class="qris-payment__image"
-        src="{{ asset('images/qris_dwiera.png') }}"
+        src="{{ asset('images/qris_dwiera.jpeg') }}"
         alt="Barcode QRIS Dwiera Cake"
     >
     <p>Scan QRIS ini menggunakan aplikasi bank atau dompet digital.</p>

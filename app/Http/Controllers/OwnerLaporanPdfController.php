@@ -12,9 +12,17 @@ class OwnerLaporanPdfController extends Controller
 {
     public function unduh(Request $request)
     {
-        $request->validate([
+        $filters = $request->validate([
             'dari' => ['required', 'date'],
             'sampai' => ['required', 'date', 'after_or_equal:dari'],
+            'metode_pembayaran' => [
+                'nullable',
+                'in:cash,qris,transfer',
+            ],
+            'status_pesanan' => [
+                'nullable',
+                'in:menunggu,dikonfirmasi,dibuat,siap_diambil,selesai',
+            ],
         ], [
             'dari.required' => 'Tanggal awal wajib diisi.',
             'sampai.required' => 'Tanggal akhir wajib diisi.',
@@ -23,6 +31,8 @@ class OwnerLaporanPdfController extends Controller
 
         $dari = Carbon::parse($request->dari)->startOfDay();
         $sampai = Carbon::parse($request->sampai)->endOfDay();
+        $metodePembayaran = $filters['metode_pembayaran'] ?? null;
+        $statusPesanan = $filters['status_pesanan'] ?? null;
 
         $pesanan = Pesanan::with([
             'user',
@@ -31,6 +41,23 @@ class OwnerLaporanPdfController extends Controller
             'pembayaran',
         ])
             ->whereBetween('tanggal_pesan', [$dari, $sampai])
+            ->when(
+                $metodePembayaran,
+                fn ($query) => $query->whereHas(
+                    'pembayaran',
+                    fn ($pembayaranQuery) => $pembayaranQuery->where(
+                        'metode_pembayaran',
+                        $metodePembayaran
+                    )
+                )
+            )
+            ->when(
+                $statusPesanan,
+                fn ($query) => $query->where(
+                    'status_pesanan',
+                    $statusPesanan
+                )
+            )
             ->orderBy('tanggal_pesan')
             ->get();
 
@@ -69,11 +96,16 @@ class OwnerLaporanPdfController extends Controller
         // Rekap metode pembayaran dari transaksi lunas.
         $perMetode = [];
 
-        foreach ([
+        $semuaMetode = [
             'cash' => 'Cash',
             'transfer' => 'Transfer',
             'qris' => 'QRIS',
-        ] as $kunci => $namaMetode) {
+        ];
+        $metodeUntukRekap = $metodePembayaran
+            ? [$metodePembayaran => $semuaMetode[$metodePembayaran]]
+            : $semuaMetode;
+
+        foreach ($metodeUntukRekap as $kunci => $namaMetode) {
             $kelompok = $lunasList->filter(
                 fn ($p) => strtolower(
                     (string) $p->pembayaran->metode_pembayaran
@@ -209,6 +241,8 @@ class OwnerLaporanPdfController extends Controller
             'dari' => $dari,
             'sampai' => $sampai,
             'dicetak' => now(),
+            'metodePembayaran' => $metodePembayaran,
+            'statusPesanan' => $statusPesanan,
 
             'pesanan' => $pesanan,
             'lunasList' => $lunasList,
@@ -236,6 +270,7 @@ class OwnerLaporanPdfController extends Controller
             . $dari->format('Ymd')
             . '-'
             . $sampai->format('Ymd')
+            . ($metodePembayaran ? '-' . $metodePembayaran : '')
             . '.pdf';
 
         return Pdf::loadView('pdf.laporan_penjualan', $data)

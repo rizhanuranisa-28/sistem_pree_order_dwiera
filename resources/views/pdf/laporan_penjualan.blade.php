@@ -203,6 +203,20 @@
         {{ $sampai->format('d/m/Y') }}
     </div>
 
+    @if ($metodePembayaran)
+        <div class="sub">
+            Metode pembayaran:
+            {{ $metodePembayaran === 'cash' ? 'Tunai' : strtoupper($metodePembayaran) }}
+        </div>
+    @endif
+
+    @if ($statusPesanan)
+        <div class="sub">
+            Status pesanan:
+            {{ ucfirst(str_replace('_', ' ', $statusPesanan)) }}
+        </div>
+    @endif
+
     <div class="sub">
         Dicetak: {{ $dicetak->format('d/m/Y H:i') }}
     </div>
