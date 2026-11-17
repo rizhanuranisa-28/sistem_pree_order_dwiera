@@ -23,11 +23,11 @@ class AdminTambahPesananController extends Controller
     {
         $produk = Produk::with([
             'ukuranProduks' => function ($query) {
-                $query->where('status', 'aktif')
+                $query->whereIn('status', ['aktif', 'tersedia'])
                     ->orderBy('harga', 'asc');
             }
         ])
-        ->where('status', 'aktif')
+        ->whereIn('status', ['aktif', 'tersedia'])
         ->orderBy('nama_kue')
         ->get();
 
@@ -120,7 +120,7 @@ class AdminTambahPesananController extends Controller
                             'id_produk',
                             $item['id_produk']
                         )
-                        ->where('status', 'aktif')
+                        ->whereIn('status', ['aktif', 'tersedia'])
                         ->lockForUpdate()
                         ->first();
 
@@ -135,7 +135,7 @@ class AdminTambahPesananController extends Controller
                             $item['id_ukuran']
                         )
                         ->where('id_produk', $produk->id_produk)
-                        ->where('status', 'aktif')
+                        ->whereIn('status', ['aktif', 'tersedia'])
                         ->first();
 
                         if (!$ukuran) {

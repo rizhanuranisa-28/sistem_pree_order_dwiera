@@ -21,13 +21,13 @@ class CheckoutController extends Controller
      */
     public function create(Request $request, $id)
     {
-        $produk = Produk::where('status', 'aktif')
+        $produk = Produk::whereIn('status', ['aktif', 'tersedia'])
             ->findOrFail($id);
 
         // Ambil ukuran yang dipilih pelanggan.
         $ukuran = UkuranProduk::where('id_ukuran', $request->query('id_ukuran'))
             ->where('id_produk', $produk->id_produk)
-            ->where('status', 'aktif')
+            ->whereIn('status', ['aktif', 'tersedia'])
             ->first();
 
         if (!$ukuran) {
@@ -104,12 +104,12 @@ class CheckoutController extends Controller
         $total = 0;
 
         foreach ($keranjang as $key => $data) {
-            $produk = Produk::where('status', 'aktif')
+            $produk = Produk::whereIn('status', ['aktif', 'tersedia'])
                 ->find($data['id_produk'] ?? null);
 
             $ukuran = UkuranProduk::where('id_ukuran', $data['id_ukuran'] ?? null)
                 ->where('id_produk', $data['id_produk'] ?? null)
-                ->where('status', 'aktif')
+                ->whereIn('status', ['aktif', 'tersedia'])
                 ->first();
 
             if (!$produk || !$ukuran) {
@@ -236,12 +236,12 @@ class CheckoutController extends Controller
                         $idProduk = $data['id_produk'] ?? null;
                         $idUkuran = $data['id_ukuran'] ?? null;
 
-                        $produk = Produk::where('status', 'aktif')
+                        $produk = Produk::whereIn('status', ['aktif', 'tersedia'])
                             ->find($idProduk);
 
                         $ukuran = UkuranProduk::where('id_ukuran', $idUkuran)
                             ->where('id_produk', $idProduk)
-                            ->where('status', 'aktif')
+                            ->whereIn('status', ['aktif', 'tersedia'])
                             ->first();
 
                         if (!$produk || !$ukuran) {

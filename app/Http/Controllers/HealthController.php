@@ -12,7 +12,7 @@ class HealthController extends Controller
             DB::connection()->getPdo();
 
             $activeProduk = DB::table('produk')
-                ->where('status', 'aktif')
+                ->whereIn('status', ['aktif', 'tersedia'])
                 ->count();
 
             $totalPesanan = DB::table('pesanan')

@@ -317,13 +317,13 @@
 
                                 <select name="ukuran_produk[{{ $index }}][status]" required>
                                     <option value="tersedia"
-                                        {{ ($ukuran['status'] ?? 'tersedia') == 'tersedia' ? 'selected' : '' }}>
-                                        tersedia
+                                        {{ in_array(strtolower((string) ($ukuran['status'] ?? 'aktif')), ['aktif', 'tersedia'], true) ? 'selected' : '' }}>
+                                        Tersedia
                                     </option>
 
                                     <option value="habis"
-                                        {{ ($ukuran['status'] ?? '') == 'habis' ? 'selected' : '' }}>
-                                        habis
+                                        {{ in_array(strtolower((string) ($ukuran['status'] ?? '')), ['nonaktif', 'habis'], true) ? 'selected' : '' }}>
+                                        Habis
                                     </option>
                                 </select>
                             </div>
@@ -377,14 +377,14 @@
 
                 <option
                     value="tersedia"
-                    {{ old('status', $produk->status) == 'tersedia' ? 'selected' : '' }}
+                    {{ in_array(strtolower((string) old('status', $produk->status)), ['aktif', 'tersedia'], true) ? 'selected' : '' }}
                 >
-                    tersedia
+                    Tersedia
                 </option>
 
                 <option
                     value="habis"
-                    {{ old('status', $produk->status) == 'habis' ? 'selected' : '' }}
+                    {{ in_array(strtolower((string) old('status', $produk->status)), ['nonaktif', 'habis'], true) ? 'selected' : '' }}
                 >
                     Habis
                 </option>
@@ -456,7 +456,7 @@
                     <label>Status Ukuran</label>
 
                     <select name="ukuran_produk[${indexUkuran}][status]" required>
-                        <option value="tersedia" selected>tersedia</option>
+                        <option value="tersedia" selected>Tersedia</option>
                         <option value="habis">Habis</option>
                     </select>
                 </div>

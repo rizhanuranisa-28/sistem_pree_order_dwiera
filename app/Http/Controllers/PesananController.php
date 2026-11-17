@@ -78,7 +78,7 @@ class PesananController extends Controller
                 ->with('error', 'Pembayaran sudah tercatat. Hubungi admin untuk mengubah pesanan.');
         }
 
-        $produk = Produk::where('status', 'aktif')
+        $produk = Produk::whereIn('status', ['aktif', 'tersedia'])
             ->orderBy('nama_kue')
             ->get();
 
@@ -221,7 +221,7 @@ class PesananController extends Controller
                     }
 
                     // Semua kue harus berstatus aktif.
-                    $produkList = Produk::where('status', 'aktif')
+                    $produkList = Produk::whereIn('status', ['aktif', 'tersedia'])
                         ->whereIn('id_produk', $idProdukDipilih)
                         ->get()
                         ->keyBy('id_produk');

@@ -93,7 +93,7 @@ class OwnerLaporanPdfController extends Controller
         // Rekap produk.
         $produkMap = [];
 
-        foreach (Produk::where('status', 'aktif')->get() as $produk) {
+        foreach (Produk::whereIn('status', ['aktif', 'tersedia'])->get() as $produk) {
             $produkMap[$produk->nama_kue] = [
                 'nama' => $produk->nama_kue,
                 'jumlah' => 0,

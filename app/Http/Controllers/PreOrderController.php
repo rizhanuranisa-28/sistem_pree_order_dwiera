@@ -10,7 +10,7 @@ class PreOrderController extends Controller
     {
         $produk = Produk::with([
             'ukuranProduks' => function ($query) {
-                $query->where('status', 'aktif')
+                $query->whereIn('status', ['aktif', 'tersedia'])
                       ->orderBy('harga', 'asc');
             }
         ])->findOrFail($id);

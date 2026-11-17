@@ -8,7 +8,7 @@ class KatalogController extends Controller
 {
     public function index()
     {
-        $produk = Produk::where('status', 'aktif')->get();
+        $produk = Produk::whereIn('status', ['aktif', 'tersedia'])->get();
 
         return view('katalog', compact('produk'));
     }

@@ -234,7 +234,7 @@
 
         @php
             $daftarUkuran = $produk->ukuranProduks
-                ->where('status', 'aktif')
+                ->whereIn('status', ['aktif', 'tersedia'])
                 ->values();
 
             $ukuranTerpilih = old('id_ukuran', $daftarUkuran->first()?->id_ukuran);

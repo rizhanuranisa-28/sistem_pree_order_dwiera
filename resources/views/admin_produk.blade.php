@@ -616,8 +616,8 @@
                                                 Rp {{ number_format($ukuran->harga, 0, ',', '.') }}
                                             </div>
 
-                                            <span class="size-status {{ $ukuran->status === 'tersedia' ? 'size-status-tersedia' : 'size-status-habis' }}">
-                                                {{ ucfirst($ukuran->status) }}
+                                            <span class="size-status {{ in_array(strtolower((string) $ukuran->status), ['aktif', 'tersedia'], true) ? 'size-status-tersedia' : 'size-status-habis' }}">
+                                                {{ in_array(strtolower((string) $ukuran->status), ['aktif', 'tersedia'], true) ? 'Tersedia' : 'Habis' }}
                                             </span>
 
                                         </div>
@@ -638,7 +638,7 @@
 
                             <td data-label="Status Produk">
 
-                                @if(strtolower($item->status) === 'tersedia')
+                                @if(in_array(strtolower((string) $item->status), ['aktif', 'tersedia'], true))
 
                                     <span class="status status-tersedia">
                                         tersedia

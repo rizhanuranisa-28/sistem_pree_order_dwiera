@@ -668,7 +668,7 @@
                         <div class="info-icon">🧁</div>
                         <div class="info-label">Status</div>
                         <div class="info-value">
-                            @if(strtolower($produk->status) === 'aktif')
+                            @if(in_array(strtolower((string) $produk->status), ['aktif', 'tersedia'], true))
                                 <span class="status">Tersedia</span>
                             @else
                                 {{ $produk->status }}

@@ -10,11 +10,11 @@ class DetailProdukController extends Controller
     {
         $produk = Produk::with([
             'ukuranProduks' => function ($query) {
-                $query->where('status', 'aktif')
+                $query->whereIn('status', ['aktif', 'tersedia'])
                       ->orderBy('harga', 'asc');
             }
         ])
-        ->where('status', 'aktif')
+        ->whereIn('status', ['aktif', 'tersedia'])
         ->findOrFail($id);
 
         return view('detail_produk', compact('produk'));

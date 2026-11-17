@@ -19,11 +19,11 @@ class KeranjangController extends Controller
         $total = 0;
 
         foreach ($keranjang as $key => $data) {
-            $produk = Produk::where('status', 'aktif')
+            $produk = Produk::whereIn('status', ['aktif', 'tersedia'])
                 ->find($data['id_produk'] ?? null);
 
             $ukuran = UkuranProduk::where('id_produk', $data['id_produk'] ?? null)
-                ->where('status', 'aktif')
+                ->whereIn('status', ['aktif', 'tersedia'])
                 ->find($data['id_ukuran'] ?? null);
 
             if (!$produk || !$ukuran) {
@@ -62,7 +62,7 @@ class KeranjangController extends Controller
         ]);
 
         // Cari produk yang masih aktif.
-        $produk = Produk::where('status', 'aktif')
+        $produk = Produk::whereIn('status', ['aktif', 'tersedia'])
             ->find($id);
 
         if (!$produk) {
@@ -74,7 +74,7 @@ class KeranjangController extends Controller
         // Cari ukuran yang sesuai dengan produk dan masih aktif.
         $ukuran = UkuranProduk::where('id_ukuran', $validated['id_ukuran'])
             ->where('id_produk', $produk->id_produk)
-            ->where('status', 'aktif')
+            ->whereIn('status', ['aktif', 'tersedia'])
             ->first();
 
         if (!$ukuran) {
@@ -146,12 +146,12 @@ class KeranjangController extends Controller
 
         $data = $keranjang[$id];
 
-        $produk = Produk::where('status', 'aktif')
+        $produk = Produk::whereIn('status', ['aktif', 'tersedia'])
             ->find($data['id_produk'] ?? null);
 
         $ukuran = UkuranProduk::where('id_ukuran', $data['id_ukuran'] ?? null)
             ->where('id_produk', $data['id_produk'] ?? null)
-            ->where('status', 'aktif')
+            ->whereIn('status', ['aktif', 'tersedia'])
             ->first();
 
         if (!$produk || !$ukuran) {

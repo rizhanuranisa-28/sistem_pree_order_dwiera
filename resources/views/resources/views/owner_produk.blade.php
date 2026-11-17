@@ -178,7 +178,7 @@
                                 </td>
 
                                 <td>
-                                    @if (strtolower((string) $item->status) === 'aktif')
+                                    @if (in_array(strtolower((string) $item->status), ['aktif', 'tersedia'], true))
                                         <span class="badge status-aktif">
                                             Aktif
                                         </span>

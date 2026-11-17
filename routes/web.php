@@ -185,7 +185,7 @@ Route::middleware(['auth', CekRole::class . ':owner'])->group(function () {
 
 Route::get('/pelanggan', function () {
 
-    $produk = \App\Models\Produk::where('status', 'aktif')
+    $produk = \App\Models\Produk::whereIn('status', ['aktif', 'tersedia'])
         ->latest('id_produk')
         ->get();
 

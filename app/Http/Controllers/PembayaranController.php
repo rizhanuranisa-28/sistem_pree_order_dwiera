@@ -21,12 +21,12 @@ class PembayaranController extends Controller
      */
     public function create(Request $request, $id)
     {
-        $produk = Produk::where('status', 'aktif')
+        $produk = Produk::whereIn('status', ['aktif', 'tersedia'])
             ->findOrFail($id);
 
         $ukuran = UkuranProduk::where('id_ukuran', $request->query('id_ukuran'))
             ->where('id_produk', $produk->id_produk)
-            ->where('status', 'aktif')
+            ->whereIn('status', ['aktif', 'tersedia'])
             ->first();
 
         if (!$ukuran) {
@@ -126,12 +126,12 @@ class PembayaranController extends Controller
             ],
         ]);
 
-        $produk = Produk::where('status', 'aktif')
+        $produk = Produk::whereIn('status', ['aktif', 'tersedia'])
             ->findOrFail($id);
 
         $ukuran = UkuranProduk::where('id_ukuran', $validated['id_ukuran'])
             ->where('id_produk', $produk->id_produk)
-            ->where('status', 'aktif')
+            ->whereIn('status', ['aktif', 'tersedia'])
             ->first();
 
         if (!$ukuran) {
@@ -192,7 +192,7 @@ class PembayaranController extends Controller
                     }
 
                     // Periksa ulang produk dan ukuran dari database.
-                    $produkAktif = Produk::where('status', 'aktif')
+                    $produkAktif = Produk::whereIn('status', ['aktif', 'tersedia'])
                         ->find($produk->id_produk);
 
                     $ukuranAktif = UkuranProduk::where(
@@ -200,7 +200,7 @@ class PembayaranController extends Controller
                         $ukuran->id_ukuran
                     )
                         ->where('id_produk', $produk->id_produk)
-                        ->where('status', 'aktif')
+                        ->whereIn('status', ['aktif', 'tersedia'])
                         ->first();
 
                     if (!$produkAktif || !$ukuranAktif) {
