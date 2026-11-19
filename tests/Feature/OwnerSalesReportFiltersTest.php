@@ -76,6 +76,16 @@ class OwnerSalesReportFiltersTest extends TestCase
             ->assertSee('formaction="' . route('owner.laporan.pdf') . '"', false);
     }
 
+    public function test_pdf_form_uses_https_behind_a_reverse_proxy(): void
+    {
+        $response = $this->withHeader('X-Forwarded-Proto', 'https')
+            ->get('/owner/laporan');
+
+        $response->assertOk()
+            ->assertSee('formaction="https://', false)
+            ->assertSee('/owner/laporan/pdf"', false);
+    }
+
     public function test_order_status_filter_updates_report_rows_and_total(): void
     {
         $response = $this->get(route('owner.laporan', [
