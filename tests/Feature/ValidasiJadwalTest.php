@@ -132,7 +132,7 @@ class ValidasiJadwalTest extends TestCase
 
         $this->assertSame(
             'Pesanan Penuh. Jadwal ini sudah mencapai batas maksimal. '
-                . 'Silakan pilih jam pengambilan berikutnya yang tersedia.',
+                . 'Silakan pilih jam pengambilan minimal 3 jam setelah pemesanan dilakukan.',
             ValidasiJadwal::cek('2026-11-19', '14:00')
         );
     }
