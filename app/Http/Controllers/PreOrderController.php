@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Produk;
+use App\Support\ValidasiJadwal;
 
 class PreOrderController extends Controller
 {
@@ -15,6 +16,16 @@ class PreOrderController extends Controller
             }
         ])->findOrFail($id);
 
-        return view('pre_order', compact('produk'));
+        $sekarang = now(config('app.timezone', 'Asia/Jakarta'));
+        $batasMinimalJadwal = ValidasiJadwal::batasMinimal($sekarang);
+        $waktuPalingCepat = ValidasiJadwal::waktuPalingCepat($sekarang);
+        $pesanJadwalMinimum = ValidasiJadwal::pesanJadwalMinimum($sekarang);
+
+        return view('pre_order', compact(
+            'produk',
+            'batasMinimalJadwal',
+            'waktuPalingCepat',
+            'pesanJadwalMinimum'
+        ));
     }
 }

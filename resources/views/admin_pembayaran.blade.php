@@ -872,6 +872,14 @@
                                      * Pesanan offline dibuat tanpa id_users.
                                      */
                                     $pesanan = $item->pesanan;
+                                    $statusPesanan = strtolower(trim(
+                                        (string) ($pesanan->status_pesanan ?? '')
+                                    ));
+                                    $bisaLihatStruk = $lunas
+                                        && (
+                                            in_array($metode, ['cash', 'tunai'], true)
+                                            || $statusPesanan === 'selesai'
+                                        );
 
                                     $offline = $pesanan
                                         && $pesanan->id_users === null;
@@ -997,12 +1005,18 @@
                                     </td>
 
                                     <td>
-                                        @if($lunas)
+                                        @if($bisaLihatStruk)
 
                                             <a href="{{ route('struk.admin', $item->id_pesanan) }}"
                                                class="btn btn-receipt">
                                                 Lihat Struk
                                             </a>
+
+                                        @elseif($lunas && $butuhBukti)
+
+                                            <span class="small-note">
+                                                Struk tersedia setelah pesanan selesai.
+                                            </span>
 
                                         @elseif($metode === 'cash')
 

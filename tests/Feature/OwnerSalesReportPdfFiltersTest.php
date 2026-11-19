@@ -109,6 +109,47 @@ class OwnerSalesReportPdfFiltersTest extends TestCase
         $response->assertOk();
     }
 
+    public function test_pdf_date_filter_uses_transaction_date_and_shared_total(): void
+    {
+        $pdf = Mockery::mock(\Barryvdh\DomPDF\PDF::class);
+        $pdf->shouldReceive('setPaper')
+            ->once()
+            ->with('a4', 'portrait')
+            ->andReturnSelf();
+        $pdf->shouldReceive('download')
+            ->once()
+            ->with('laporan-penjualan-20261102-20261102.pdf')
+            ->andReturn(response('PDF', 200, ['Content-Type' => 'application/pdf']));
+
+        Pdf::shouldReceive('loadView')
+            ->once()
+            ->with(
+                'pdf.laporan_penjualan',
+                Mockery::on(function (array $data): bool {
+                    $this->assertSame(
+                        [101],
+                        $data['pesanan']->pluck('id_pesanan')->all()
+                    );
+                    $this->assertSame(
+                        '2026-11-02 11:00:00',
+                        $data['pesanan']->first()->tanggal_transaksi
+                    );
+                    $this->assertSame(10000.0, $data['pendapatanBersih']);
+
+                    return true;
+                })
+            )
+            ->andReturn($pdf);
+
+        $response = $this->get(route('owner.laporan.pdf', [
+            'dari' => '2026-11-02',
+            'sampai' => '2026-11-02',
+        ]));
+
+        $response->assertOk()
+            ->assertHeader('content-type', 'application/pdf');
+    }
+
     private function createSchema(): void
     {
         Schema::create('users', function (Blueprint $table) {
@@ -168,7 +209,7 @@ class OwnerSalesReportPdfFiltersTest extends TestCase
             [
                 'id_pesanan' => 101,
                 'id_users' => 1,
-                'tanggal_pesan' => '2026-11-02 10:00:00',
+                'tanggal_pesan' => '2026-10-31 10:00:00',
                 'total_harga' => 10000,
                 'status_pesanan' => 'selesai',
             ],

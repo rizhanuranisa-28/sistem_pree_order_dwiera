@@ -504,27 +504,27 @@
     dan 5 transaksi atau lebih = Pelanggan Tetap.
 </div>
 
-{{-- RINCIAN TRANSAKSI LUNAS --}}
-<h2>Rincian Transaksi Lunas</h2>
+{{-- RINCIAN TRANSAKSI --}}
+<h2>Rincian Transaksi</h2>
 
 <table>
     <thead>
         <tr>
-            <th>Tanggal Bayar</th>
+            <th>Tanggal Transaksi</th>
             <th>No. Pesanan</th>
             <th>Pelanggan</th>
+            <th>Produk</th>
+            <th class="kanan">Total</th>
             <th>Metode</th>
-            <th class="kanan">Tagihan</th>
-            <th class="kanan">Diterima</th>
-            <th class="kanan">Kembalian</th>
+            <th>Status</th>
         </tr>
     </thead>
 
     <tbody>
-        @forelse ($lunasList as $p)
+        @forelse ($pesanan as $p)
             <tr>
                 <td>
-                    {{ \Carbon\Carbon::parse($p->pembayaran->tanggal_bayar)->format('d/m/Y H:i') }}
+                    {{ \Carbon\Carbon::parse($p->tanggal_transaksi)->format('d/m/Y H:i') }}
                 </td>
 
                 <td>
@@ -546,27 +546,35 @@
                 </td>
 
                 <td>
-                    {{ strtolower($p->pembayaran->metode_pembayaran) === 'qris'
-                        ? 'QRIS'
-                        : ucfirst($p->pembayaran->metode_pembayaran) }}
+                    @forelse ($p->detailPesanans as $detail)
+                        {{ $detail->produk->nama_kue ?? '-' }}@if (!$loop->last), @endif
+                    @empty
+                        -
+                    @endforelse
                 </td>
 
                 <td class="kanan">
-                    {{ $rp($p->pembayaran->total_bayar) }}
+                    {{ $rp($p->total_harga) }}
                 </td>
 
-                <td class="kanan">
-                    {{ $rp($p->pembayaran->bayar) }}
+                <td>
+                    @if ($p->pembayaran)
+                        {{ strtolower($p->pembayaran->metode_pembayaran) === 'qris'
+                            ? 'QRIS'
+                            : ucfirst($p->pembayaran->metode_pembayaran) }}
+                    @else
+                        -
+                    @endif
                 </td>
 
-                <td class="kanan">
-                    {{ $rp($p->pembayaran->kembalian) }}
+                <td>
+                    {{ ucfirst(str_replace('_', ' ', $p->status_pesanan ?? '-')) }}
                 </td>
             </tr>
         @empty
             <tr>
                 <td colspan="7" class="kosong">
-                    Belum ada transaksi lunas pada periode ini.
+                    Belum ada transaksi pada periode ini.
                 </td>
             </tr>
         @endforelse

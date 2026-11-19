@@ -331,6 +331,7 @@
             @endif
 
             <form action="{{ route('pesanan.update', $pesanan->id_pesanan) }}"
+                  id="formEditPesanan"
                   method="POST">
 
                 @csrf
@@ -364,7 +365,7 @@
                                             name="items[{{ $i }}][jumlah]"
                                             class="inp-jumlah"
                                             min="1"
-                                            max="100"
+                                            max="{{ \App\Support\BatasJumlahPesanan::MAKSIMAL_KUE }}"
                                             value="{{ $baris['jumlah'] ?? 1 }}"
                                             required
                                         >
@@ -384,6 +385,7 @@
                     <p class="help-text">
                         Pilihan hanya menampilkan produk yang berstatus aktif.
                         Satu jenis kue cukup dipilih sekali, naikkan jumlahnya dengan tombol +.
+                        Maksimal pemesanan 2 kue dalam satu transaksi.
                     </p>
                 </div>
 
@@ -407,12 +409,18 @@
                         name="jam_pengambilan"
                         id="jam_pengambilan"
                         value="{{ old('jam_pengambilan', $jamAwal) }}"
+                        min="{{ \App\Support\ValidasiJadwal::JAM_BUKA }}"
+                        max="{{ \App\Support\ValidasiJadwal::JAM_TUTUP }}"
                         required
                     >
 
                     <p class="help-text">
-                        Jam buka pengambilan 08:00 sampai 20:00, minimal 3 jam dari sekarang.
+                        Jadwal paling awal saat ini:
+                        {{ $waktuPalingCepat->format('d/m/Y') }}
+                        pukul {{ $waktuPalingCepat->format('H.i') }}.
                     </p>
+
+                    @include('partials.validasi_jadwal_minimum')
                 </div>
 
                 <div class="form-group">
@@ -483,7 +491,9 @@
                 <div class="qty">
                     <button type="button" class="qty-btn btn-minus" aria-label="Kurangi">−</button>
                     <input type="number" name="items[__INDEX__][jumlah]"
-                           class="inp-jumlah" min="1" max="100" value="1" required>
+                           class="inp-jumlah" min="1"
+                           max="{{ \App\Support\BatasJumlahPesanan::MAKSIMAL_KUE }}"
+                           value="1" required>
                     <button type="button" class="qty-btn btn-plus" aria-label="Tambah">+</button>
                 </div>
 
@@ -498,6 +508,7 @@
         const daftarKue = document.getElementById('daftarKue');
         const templateBaris = document.getElementById('templateBaris');
         const btnTambah = document.getElementById('btnTambah');
+        const formEditPesanan = document.getElementById('formEditPesanan');
         const jenisTampil = document.getElementById('jenisTampil');
         const jumlahTampil = document.getElementById('jumlahTampil');
         const totalHarga = document.getElementById('totalHarga');
@@ -510,7 +521,9 @@
 
         function ambilJumlah(baris) {
             const nilai = parseInt(baris.querySelector('.inp-jumlah').value, 10);
-            return isNaN(nilai) ? 0 : Math.min(100, Math.max(0, nilai));
+            return isNaN(nilai)
+                ? 0
+                : Math.min({{ \App\Support\BatasJumlahPesanan::MAKSIMAL_KUE }}, Math.max(0, nilai));
         }
 
         function ambilHarga(baris) {
@@ -572,6 +585,11 @@
             jenisTampil.textContent = jenis;
             jumlahTampil.textContent = totalJumlah;
             totalHarga.textContent = formatRupiah(total);
+            btnTambah.disabled = totalJumlah >= {{ \App\Support\BatasJumlahPesanan::MAKSIMAL_KUE }};
+
+            daftarKue.querySelectorAll('.btn-plus').forEach(function (button) {
+                button.disabled = totalJumlah >= {{ \App\Support\BatasJumlahPesanan::MAKSIMAL_KUE }};
+            });
         }
 
         function segarkan() {
@@ -587,7 +605,12 @@
             const input = baris.querySelector('.inp-jumlah');
 
             if (e.target.closest('.btn-plus')) {
-                input.value = Math.min(100, (parseInt(input.value, 10) || 0) + 1);
+                if (parseInt(jumlahTampil.textContent, 10) >= {{ \App\Support\BatasJumlahPesanan::MAKSIMAL_KUE }}) {
+                    alert('Maksimal pemesanan 2 kue dalam satu transaksi.');
+                    return;
+                }
+
+                input.value = Math.min({{ \App\Support\BatasJumlahPesanan::MAKSIMAL_KUE }}, (parseInt(input.value, 10) || 0) + 1);
                 segarkan();
             } else if (e.target.closest('.btn-minus')) {
                 input.value = Math.max(1, (parseInt(input.value, 10) || 1) - 1);
@@ -604,6 +627,11 @@
         daftarKue.addEventListener('input', hitungTotal);
 
         btnTambah.addEventListener('click', function () {
+            if (parseInt(jumlahTampil.textContent, 10) >= {{ \App\Support\BatasJumlahPesanan::MAKSIMAL_KUE }}) {
+                alert('Maksimal pemesanan 2 kue dalam satu transaksi.');
+                return;
+            }
+
             const html = templateBaris.innerHTML.replace(/__INDEX__/g, indexBerikut++);
             const wadah = document.createElement('div');
             wadah.innerHTML = html.trim();
@@ -621,6 +649,13 @@
                 barisBaru.remove();
                 segarkan();
                 alert('Semua jenis kue yang tersedia sudah ada di pesanan ini.');
+            }
+        });
+
+        formEditPesanan.addEventListener('submit', function (event) {
+            if (parseInt(jumlahTampil.textContent, 10) > {{ \App\Support\BatasJumlahPesanan::MAKSIMAL_KUE }}) {
+                event.preventDefault();
+                alert('Maksimal pemesanan 2 kue dalam satu transaksi.');
             }
         });
 

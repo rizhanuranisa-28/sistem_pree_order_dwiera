@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
@@ -14,6 +15,7 @@ class OwnerSalesReportFiltersTest extends TestCase
     {
         parent::setUp();
 
+        Carbon::setTestNow('2026-11-30 12:00:00');
         $this->createSchema();
         $this->createOrdersAndPayments();
 
@@ -24,6 +26,13 @@ class OwnerSalesReportFiltersTest extends TestCase
         ]);
 
         $this->actingAs($owner);
+    }
+
+    protected function tearDown(): void
+    {
+        Carbon::setTestNow();
+
+        parent::tearDown();
     }
 
     public function test_unfiltered_report_shows_all_orders_and_sales_total(): void
@@ -49,6 +58,22 @@ class OwnerSalesReportFiltersTest extends TestCase
             ->assertDontSee('#102')
             ->assertSee('Rp 30.000')
             ->assertSee('value="qris" selected', false);
+    }
+
+    public function test_transaction_date_filter_uses_payment_date(): void
+    {
+        $response = $this->get(route('owner.laporan', [
+            'dari' => '2026-11-01',
+            'sampai' => '2026-11-01',
+        ]));
+
+        $response->assertOk()
+            ->assertSee('#101')
+            ->assertDontSee('#102')
+            ->assertDontSee('#103')
+            ->assertSee('01/11/2026 11:00')
+            ->assertDontSee('31/10/2026 10:00')
+            ->assertSee('formaction="' . route('owner.laporan.pdf') . '"', false);
     }
 
     public function test_order_status_filter_updates_report_rows_and_total(): void
@@ -143,7 +168,7 @@ class OwnerSalesReportFiltersTest extends TestCase
             [
                 'id_pesanan' => 101,
                 'id_users' => 1,
-                'tanggal_pesan' => '2026-11-01 10:00:00',
+                'tanggal_pesan' => '2026-10-31 10:00:00',
                 'total_harga' => 10000,
                 'status_pesanan' => 'selesai',
             ],

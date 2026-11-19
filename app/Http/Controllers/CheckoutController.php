@@ -8,6 +8,7 @@ use App\Models\JadwalPengambilan;
 use App\Models\Pesanan;
 use App\Models\DetailPesanan;
 use App\Models\Pembayaran;
+use App\Support\BatasJumlahPesanan;
 use App\Support\ValidasiJadwal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -41,11 +42,11 @@ class CheckoutController extends Controller
         $jamPengambilan = $request->query('jam_pengambilan');
         $catatan = $request->query('catatan');
 
-        if ($jumlah < 1 || $jumlah > 100) {
+        if ($jumlah < 1 || $jumlah > BatasJumlahPesanan::MAKSIMAL_KUE) {
             return redirect()
                 ->route('preorder.create', $produk->id_produk)
                 ->withErrors([
-                    'jumlah' => 'Jumlah kue harus antara 1 sampai 100.'
+                    'jumlah' => 'Jumlah kue harus antara 1 sampai 2.'
                 ])
                 ->withInput();
         }
@@ -100,6 +101,12 @@ class CheckoutController extends Controller
                 ->with('error', 'Keranjang kamu masih kosong.');
         }
 
+        if (BatasJumlahPesanan::total($keranjang) > BatasJumlahPesanan::MAKSIMAL_KUE) {
+            return redirect()
+                ->route('keranjang.index')
+                ->with('error', BatasJumlahPesanan::pesanMaksimal());
+        }
+
         $items = [];
         $total = 0;
 
@@ -118,7 +125,7 @@ class CheckoutController extends Controller
 
             $jumlah = (int) ($data['jumlah'] ?? 1);
 
-            if ($jumlah < 1 || $jumlah > 100) {
+            if ($jumlah < 1 || $jumlah > BatasJumlahPesanan::MAKSIMAL_KUE) {
                 return redirect()
                     ->route('keranjang.index')
                     ->with('error', 'Jumlah salah satu produk tidak valid.');
@@ -145,7 +152,18 @@ class CheckoutController extends Controller
                 ->with('error', 'Produk atau ukuran di keranjang sudah tidak tersedia. Silakan periksa kembali keranjang kamu.');
         }
 
-        return view('checkout-keranjang', compact('items', 'total'));
+        $sekarang = now(config('app.timezone', 'Asia/Jakarta'));
+        $batasMinimalJadwal = ValidasiJadwal::batasMinimal($sekarang);
+        $waktuPalingCepat = ValidasiJadwal::waktuPalingCepat($sekarang);
+        $pesanJadwalMinimum = ValidasiJadwal::pesanJadwalMinimum($sekarang);
+
+        return view('checkout-keranjang', compact(
+            'items',
+            'total',
+            'batasMinimalJadwal',
+            'waktuPalingCepat',
+            'pesanJadwalMinimum'
+        ));
     }
 
     /**
@@ -180,6 +198,12 @@ class CheckoutController extends Controller
             return redirect()
                 ->route('keranjang.index')
                 ->with('error', 'Keranjang kamu masih kosong.');
+        }
+
+        if (BatasJumlahPesanan::total($keranjang) > BatasJumlahPesanan::MAKSIMAL_KUE) {
+            return redirect()
+                ->route('keranjang.index')
+                ->with('error', BatasJumlahPesanan::pesanMaksimal());
         }
 
         $tanggalPengambilan = $validated['tanggal_pengambilan'];
@@ -252,9 +276,9 @@ class CheckoutController extends Controller
 
                         $jumlah = (int) ($data['jumlah'] ?? 1);
 
-                        if ($jumlah < 1 || $jumlah > 100) {
+                        if ($jumlah < 1 || $jumlah > BatasJumlahPesanan::MAKSIMAL_KUE) {
                             throw ValidationException::withMessages([
-                                'jumlah' => 'Jumlah produk harus antara 1 sampai 100.',
+                                'jumlah' => 'Jumlah kue harus antara 1 sampai 2.',
                             ]);
                         }
 

@@ -385,6 +385,18 @@
         margin-bottom: 22px;
     }
 
+    .quantity-hint {
+        margin-top: 6px;
+        color: #8a7b82;
+        font-size: 12px;
+    }
+
+    .quantity-warning {
+        margin-top: 6px;
+        color: #b42318;
+        font-size: 12px;
+    }
+
     .btn-order {
         width: 100%;
         padding: 16px;
@@ -700,7 +712,6 @@
                                     {{ old('id_ukuran') == $ukuran->id_ukuran ? 'selected' : '' }}
                                 >
                                     {{ $ukuran->nama_ukuran }}
-                                    — Rp{{ number_format($ukuran->harga, 0, ',', '.') }}
                                 </option>
                             @endforeach
                         </select>
@@ -726,10 +737,18 @@
                             name="jumlah"
                             id="jumlah"
                             min="1"
-                            max="100"
+                            max="{{ \App\Support\BatasJumlahPesanan::MAKSIMAL_KUE }}"
                             value="{{ old('jumlah', 1) }}"
                             required
                         >
+                        <div class="quantity-hint">Maksimal pemesanan 2 kue</div>
+                        <div
+                            class="quantity-warning"
+                            id="peringatanJumlah"
+                            role="alert"
+                            aria-live="polite"
+                            hidden
+                        >Maksimal pemesanan 2 kue dalam satu transaksi.</div>
                     </div>
 
                     <!-- TOMBOL KERANJANG -->
@@ -762,6 +781,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const idUkuranKirim = document.getElementById('id_ukuran');
     const hargaProduk = document.getElementById('hargaProduk');
     const jumlah = document.getElementById('jumlah');
+    const peringatanJumlah = document.getElementById('peringatanJumlah');
+    const batasJumlah = {{ \App\Support\BatasJumlahPesanan::MAKSIMAL_KUE }};
 
     function perbaruiPilihan() {
         const pilihan = pilihanUkuran.options[pilihanUkuran.selectedIndex];
@@ -774,18 +795,35 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         const harga = Number(pilihan.dataset.harga);
+        const jumlahDipilih = Number(jumlah.value) || 0;
+        const total = harga * jumlahDipilih;
 
-        hargaProduk.textContent = new Intl.NumberFormat('id-ID', {
+        const totalTerformat = new Intl.NumberFormat('id-ID', {
             style: 'currency',
             currency: 'IDR',
             maximumFractionDigits: 0
-        }).format(harga);
+        }).format(total);
+
+        hargaProduk.textContent = 'Total: ' + totalTerformat;
+    }
+
+    function validasiJumlah() {
+        if (Number(jumlah.value) > batasJumlah) {
+            jumlah.value = batasJumlah;
+            peringatanJumlah.hidden = false;
+        } else {
+            peringatanJumlah.hidden = true;
+        }
+
+        perbaruiPilihan();
     }
 
     pilihanUkuran.addEventListener('change', perbaruiPilihan);
+    jumlah.addEventListener('input', validasiJumlah);
+    jumlah.addEventListener('change', validasiJumlah);
 
     formKeranjang.addEventListener('submit', function (event) {
-        perbaruiPilihan();
+        validasiJumlah();
 
         if (!idUkuranKirim.value) {
             event.preventDefault();
@@ -797,15 +835,15 @@ document.addEventListener('DOMContentLoaded', function () {
         if (
             !jumlah.value ||
             Number(jumlah.value) < 1 ||
-            Number(jumlah.value) > 100
+            Number(jumlah.value) > batasJumlah
         ) {
             event.preventDefault();
-            alert('Jumlah kue harus antara 1 sampai 100.');
+            peringatanJumlah.hidden = false;
             jumlah.focus();
         }
     });
 
-    perbaruiPilihan();
+    validasiJumlah();
 });
 </script>
 

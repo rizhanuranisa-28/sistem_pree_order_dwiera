@@ -263,6 +263,8 @@
                 id="jam_pengambilan"
                 name="jam_pengambilan"
                 value="{{ old('jam_pengambilan') }}"
+                min="{{ \App\Support\ValidasiJadwal::JAM_BUKA }}"
+                max="{{ \App\Support\ValidasiJadwal::JAM_TUTUP }}"
                 class="@error('jam_pengambilan') is-invalid @enderror"
                 required
             >
@@ -271,9 +273,13 @@
                 <div class="field-error">{{ $message }}</div>
             @else
                 <div class="hint">
-                    Pilih jam pengambilan sesuai kesepakatan dengan toko.
+                    Jadwal paling awal saat ini:
+                    {{ $waktuPalingCepat->format('d/m/Y') }}
+                    pukul {{ $waktuPalingCepat->format('H.i') }}.
                 </div>
             @enderror
+
+            @include('partials.validasi_jadwal_minimum')
         </div>
     </section>
 

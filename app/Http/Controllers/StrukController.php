@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 class StrukController extends Controller
 {
-    // Struk hanya dapat dicetak oleh admin setelah pesanan selesai.
+    // Struk cash dapat dicetak sebelum pesanan selesai; transfer dan QRIS menunggu pesanan selesai.
     public function admin($id)
     {
         abort_unless(
@@ -23,13 +23,20 @@ class StrukController extends Controller
             'jadwalPengambilan',
         ])->findOrFail($id);
 
-        // Struk hanya tersedia jika pesanan sudah selesai.
-        if (strtolower(trim($pesanan->status_pesanan)) !== 'selesai') {
+        $metodePembayaran = strtolower(trim(
+            (string) ($pesanan->pembayaran->metode_pembayaran ?? '')
+        ));
+        $metodeCash = in_array($metodePembayaran, ['cash', 'tunai'], true);
+        $pesananSelesai = strtolower(trim(
+            (string) $pesanan->status_pesanan
+        )) === 'selesai';
+
+        if (!$metodeCash && !$pesananSelesai) {
             return redirect()
                 ->back()
                 ->with(
                     'error',
-                    'Struk hanya dapat dicetak setelah pesanan selesai.'
+                    'Struk pembayaran transfer atau QRIS hanya dapat dilihat setelah pesanan selesai.'
                 );
         }
 

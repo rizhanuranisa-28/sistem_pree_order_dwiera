@@ -2,64 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pesanan;
 use App\Models\Produk;
+use App\Support\OwnerSalesReport;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class OwnerLaporanPdfController extends Controller
 {
-    public function unduh(Request $request)
+    public function unduh(Request $request, OwnerSalesReport $laporan)
     {
-        $filters = $request->validate([
-            'dari' => ['required', 'date'],
-            'sampai' => ['required', 'date', 'after_or_equal:dari'],
-            'metode_pembayaran' => [
-                'nullable',
-                'in:cash,qris,transfer',
-            ],
-            'status_pesanan' => [
-                'nullable',
-                'in:menunggu,dikonfirmasi,dibuat,siap_diambil,selesai',
-            ],
-        ], [
-            'dari.required' => 'Tanggal awal wajib diisi.',
-            'sampai.required' => 'Tanggal akhir wajib diisi.',
-            'sampai.after_or_equal' => 'Tanggal akhir tidak boleh sebelum tanggal awal.',
-        ]);
-
-        $dari = Carbon::parse($request->dari)->startOfDay();
-        $sampai = Carbon::parse($request->sampai)->endOfDay();
+        $filters = $laporan->filters($request);
+        $zonaWaktu = config('app.timezone', 'Asia/Jakarta');
+        $dari = Carbon::parse($filters['dari'], $zonaWaktu)->startOfDay();
+        $sampai = Carbon::parse($filters['sampai'], $zonaWaktu)->endOfDay();
         $metodePembayaran = $filters['metode_pembayaran'] ?? null;
         $statusPesanan = $filters['status_pesanan'] ?? null;
 
-        $pesanan = Pesanan::with([
-            'user',
-            'customer',
-            'detailPesanans.produk',
-            'pembayaran',
-        ])
-            ->whereBetween('tanggal_pesan', [$dari, $sampai])
-            ->when(
-                $metodePembayaran,
-                fn ($query) => $query->whereHas(
-                    'pembayaran',
-                    fn ($pembayaranQuery) => $pembayaranQuery->where(
-                        'metode_pembayaran',
-                        $metodePembayaran
-                    )
-                )
-            )
-            ->when(
-                $statusPesanan,
-                fn ($query) => $query->where(
-                    'status_pesanan',
-                    $statusPesanan
-                )
-            )
-            ->orderBy('tanggal_pesan')
-            ->get();
+        $pesanan = $laporan->orders($filters);
 
         // Pesanan yang sudah lunas.
         $lunasList = $pesanan->filter(function ($p) {
@@ -79,15 +39,19 @@ class OwnerLaporanPdfController extends Controller
             fn ($p) => (float) $p->pembayaran->total_bayar
         );
 
-        $uangDiterima = (float) $lunasList->sum(
+        $pesananDibayar = $pesanan->filter(
+            fn ($p) => $p->pembayaran && !empty($p->pembayaran->tanggal_bayar)
+        );
+
+        $uangDiterima = (float) $pesananDibayar->sum(
             fn ($p) => (float) $p->pembayaran->bayar
         );
 
-        $totalKembalian = (float) $lunasList->sum(
+        $totalKembalian = (float) $pesananDibayar->sum(
             fn ($p) => (float) $p->pembayaran->kembalian
         );
 
-        $pendapatanBersih = $uangDiterima - $totalKembalian;
+        $pendapatanBersih = $laporan->totalPenjualan($pesanan);
 
         $belumDibayar = (float) $belumList->sum(function ($p) {
             return (float) ($p->pembayaran->total_bayar ?? $p->total_harga ?? 0);

@@ -313,10 +313,12 @@
                     name="jumlah"
                     class="quantity @error('jumlah') is-invalid @enderror"
                     min="1"
-                    max="100"
+                    max="{{ \App\Support\BatasJumlahPesanan::MAKSIMAL_KUE }}"
                     value="{{ old('jumlah', 1) }}"
                     required
                 >
+
+                <div class="hint">Maksimal pemesanan 2 kue</div>
 
                 @error('jumlah')
                     <div class="field-error">{{ $message }}</div>
@@ -356,6 +358,8 @@
                     name="jam_pengambilan"
                     class="@error('jam_pengambilan') is-invalid @enderror"
                     value="{{ old('jam_pengambilan') }}"
+                    min="{{ \App\Support\ValidasiJadwal::JAM_BUKA }}"
+                    max="{{ \App\Support\ValidasiJadwal::JAM_TUTUP }}"
                     required
                 >
 
@@ -363,10 +367,13 @@
                     <div class="field-error">{{ $message }}</div>
                 @else
                     <div class="hint">
-                        Jam buka pengambilan 08:00 sampai 20:00,
-                        minimal 3 jam dari sekarang.
+                        Jam buka 08:00 sampai 20:00. Jadwal paling awal saat ini:
+                        {{ $waktuPalingCepat->format('d/m/Y') }}
+                        pukul {{ $waktuPalingCepat->format('H.i') }}.
                     </div>
                 @enderror
+
+                @include('partials.validasi_jadwal_minimum')
             </div>
 
             <!-- CATATAN -->

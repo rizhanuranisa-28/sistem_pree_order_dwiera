@@ -8,6 +8,7 @@ use App\Models\JadwalPengambilan;
 use App\Models\Pesanan;
 use App\Models\DetailPesanan;
 use App\Models\Pembayaran;
+use App\Support\BatasJumlahPesanan;
 use App\Support\ValidasiJadwal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -44,11 +45,11 @@ class PembayaranController extends Controller
             ? 'cash'
             : $request->query('metode');
 
-        if ($jumlah < 1 || $jumlah > 100) {
+        if ($jumlah < 1 || $jumlah > BatasJumlahPesanan::MAKSIMAL_KUE) {
             return redirect()
                 ->route('preorder.create', $produk->id_produk)
                 ->withErrors([
-                    'jumlah' => 'Jumlah kue harus antara 1 sampai 100.'
+                    'jumlah' => 'Jumlah kue harus antara 1 sampai 2.'
                 ])
                 ->withInput();
         }
@@ -104,7 +105,7 @@ class PembayaranController extends Controller
                 'required',
                 'integer',
                 'min:1',
-                'max:100',
+                'max:' . BatasJumlahPesanan::MAKSIMAL_KUE,
             ],
             'tanggal_pengambilan' => [
                 'required',

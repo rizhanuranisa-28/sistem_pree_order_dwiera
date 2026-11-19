@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DetailPesanan;
 use App\Models\Pesanan;
 use App\Models\Produk;
+use App\Support\BatasJumlahPesanan;
 use App\Support\ValidasiJadwal;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -82,7 +83,18 @@ class PesananController extends Controller
             ->orderBy('nama_kue')
             ->get();
 
-        return view('pesanan_edit', compact('pesanan', 'produk'));
+        $sekarang = Carbon::now(config('app.timezone', 'Asia/Jakarta'));
+        $batasMinimalJadwal = ValidasiJadwal::batasMinimal($sekarang);
+        $waktuPalingCepat = ValidasiJadwal::waktuPalingCepat($sekarang);
+        $pesanJadwalMinimum = ValidasiJadwal::pesanJadwalMinimum($sekarang);
+
+        return view('pesanan_edit', compact(
+            'pesanan',
+            'produk',
+            'batasMinimalJadwal',
+            'waktuPalingCepat',
+            'pesanJadwalMinimum'
+        ));
     }
 
     /**
@@ -93,7 +105,7 @@ class PesananController extends Controller
         $validated = $request->validate([
             'items' => ['required', 'array', 'min:1'],
             'items.*.id_produk' => ['required', 'integer', 'exists:produk,id_produk'],
-            'items.*.jumlah' => ['required', 'integer', 'min:1', 'max:100'],
+            'items.*.jumlah' => ['required', 'integer', 'min:1', 'max:' . BatasJumlahPesanan::MAKSIMAL_KUE],
             'tanggal_pengambilan' => ['required', 'date'],
             'jam_pengambilan' => ['required', 'date_format:H:i'],
             'catatan' => ['nullable', 'string', 'max:500'],
@@ -103,9 +115,15 @@ class PesananController extends Controller
             'items.*.id_produk.required' => 'Setiap baris harus memilih kue.',
             'items.*.jumlah.required' => 'Jumlah kue wajib diisi.',
             'items.*.jumlah.min' => 'Jumlah kue minimal 1.',
-            'items.*.jumlah.max' => 'Jumlah kue maksimal 100.',
+            'items.*.jumlah.max' => 'Jumlah kue maksimal 2.',
             'jam_pengambilan.date_format' => 'Format jam pengambilan tidak valid.',
         ]);
+
+        if (BatasJumlahPesanan::total($validated['items']) > BatasJumlahPesanan::MAKSIMAL_KUE) {
+            throw ValidationException::withMessages([
+                'items' => BatasJumlahPesanan::pesanMaksimal(),
+            ]);
+        }
 
         // Satu jenis kue tidak boleh muncul di dua baris.
         $idProdukDipilih = array_map(

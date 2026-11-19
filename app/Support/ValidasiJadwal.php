@@ -17,6 +17,62 @@ class ValidasiJadwal
     const MAKS_PESANAN_PER_SLOT = 2;
     // =================================
 
+    public static function batasMinimal(?Carbon $sekarang = null): Carbon
+    {
+        $zonaWaktu = config('app.timezone', 'Asia/Jakarta');
+        $batas = ($sekarang ?? Carbon::now($zonaWaktu))
+            ->copy()
+            ->addHours(self::MINIMAL_JAM_SEBELUM);
+
+        if ($batas->format('s.u') !== '00.000000') {
+            $batas->startOfMinute()->addMinute();
+        }
+
+        return $batas;
+    }
+
+    public static function waktuPalingCepat(?Carbon $sekarang = null): Carbon
+    {
+        $waktuPalingCepat = self::batasMinimal($sekarang);
+        $jam = $waktuPalingCepat->format('H:i');
+
+        if ($jam < self::JAM_BUKA) {
+            return $waktuPalingCepat->setTime(8, 0);
+        }
+
+        if ($jam > self::JAM_TUTUP) {
+            return $waktuPalingCepat
+                ->addDay()
+                ->setTime(8, 0);
+        }
+
+        return $waktuPalingCepat;
+    }
+
+    public static function pesanJadwalMinimum(?Carbon $sekarang = null): string
+    {
+        $sekarang = ($sekarang ?? Carbon::now(config('app.timezone', 'Asia/Jakarta')))
+            ->copy();
+        $waktuPalingCepat = self::waktuPalingCepat($sekarang);
+        $pukul = $waktuPalingCepat->format('H.i');
+        $bedaTanggal = $waktuPalingCepat->toDateString() !==
+            $sekarang->toDateString();
+        $tanggal = $bedaTanggal
+            ? ' pada tanggal ' . $waktuPalingCepat->format('d/m/Y')
+            : '';
+        $instruksi = $bedaTanggal
+            ? 'Silakan pilih tanggal tersebut pukul ' . $pukul . ' atau setelahnya.'
+            : 'Silakan pilih pukul ' . $pukul . ' atau setelahnya.';
+
+        return 'Maaf, pemesanan harus dilakukan minimal '
+            . self::MINIMAL_JAM_SEBELUM
+            . ' jam sebelum waktu pengambilan. Jadwal pengambilan paling awal yang tersedia adalah pukul '
+            . $pukul
+            . $tanggal
+            . '. '
+            . $instruksi;
+    }
+
     /**
      * Mengunci slot berdasarkan tanggal dan jam.
      *
@@ -75,13 +131,14 @@ class ValidasiJadwal
         try {
             $waktu = Carbon::createFromFormat(
                 'Y-m-d H:i',
-                $tanggal . ' ' . $jam
+                $tanggal . ' ' . $jam,
+                config('app.timezone', 'Asia/Jakarta')
             );
         } catch (\Throwable $e) {
             return 'Format tanggal atau jam pengambilan tidak valid.';
         }
 
-        $sekarang = now();
+        $sekarang = Carbon::now(config('app.timezone', 'Asia/Jakarta'));
 
         // Tidak boleh memilih jadwal yang sudah lewat.
         if ($waktu->lt($sekarang)) {
@@ -89,15 +146,10 @@ class ValidasiJadwal
         }
 
         // Minimal pemesanan 3 jam sebelumnya.
-        $palingCepat = $sekarang->copy()
-            ->addHours(self::MINIMAL_JAM_SEBELUM);
+        $palingCepat = self::batasMinimal($sekarang);
 
         if ($waktu->lt($palingCepat)) {
-            return 'Pengambilan minimal '
-                . self::MINIMAL_JAM_SEBELUM
-                . ' jam dari sekarang. Paling cepat: '
-                . $palingCepat->format('d/m/Y H:i')
-                . '.';
+            return self::pesanJadwalMinimum($sekarang);
         }
 
         // Pemeriksaan jam operasional.
@@ -175,11 +227,8 @@ class ValidasiJadwal
 
         // Maksimal dua pesanan dalam satu slot jam.
         if ($pesananLama->count() >= self::MAKS_PESANAN_PER_SLOT) {
-            return 'Jadwal pukul '
-                . $waktu->format('H:00')
-                . ' pada tanggal '
-                . $waktu->format('d/m/Y')
-                . ' sudah penuh. Silakan pilih jam lain.';
+            return 'Pesanan Penuh. Jadwal ini sudah mencapai batas maksimal. '
+                . 'Silakan pilih jam pengambilan berikutnya yang tersedia.';
         }
 
         /*

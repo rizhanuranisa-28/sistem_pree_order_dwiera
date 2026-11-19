@@ -187,7 +187,7 @@
                                 type="submit"
                                 name="aksi"
                                 value="tambah"
-                                {{ $item['jumlah'] >= 100 ? 'disabled' : '' }}
+                                {{ $jumlahTotal >= \App\Support\BatasJumlahPesanan::MAKSIMAL_KUE ? 'disabled' : '' }}
                                 aria-label="Tambah jumlah">
                             +
                         </button>
@@ -220,6 +220,8 @@
     @endforelse
 
     @if(count($items) > 0)
+        <p class="hint">Maksimal pemesanan 2 kue dalam satu transaksi.</p>
+
         <div class="total">
             <span>Total Tagihan</span>
             <span>Rp{{ number_format($total, 0, ',', '.') }}</span>

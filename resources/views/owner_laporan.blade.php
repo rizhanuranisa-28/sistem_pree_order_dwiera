@@ -135,60 +135,6 @@
             font-size: 16px;
         }
 
-        /* BARU: filter periode + unduh PDF */
-        .pdf-form {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            align-items: flex-end;
-        }
-
-        .pdf-form label {
-            display: block;
-            font-size: 13px;
-            font-weight: bold;
-            margin-bottom: 6px;
-            color: #555;
-        }
-
-        .pdf-form input[type="date"] {
-            padding: 10px;
-            border: 1px solid #e8c5d2;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-
-        .pdf-form select {
-            min-height: 39px;
-            padding: 9px 11px;
-            border: 1px solid #e8c5d2;
-            border-radius: 8px;
-            background: white;
-            color: #444;
-            font-size: 14px;
-            outline-color: #d46a8c;
-        }
-
-        .pdf-form button {
-            padding: 11px 20px;
-            border: none;
-            border-radius: 9px;
-            background: #d46a8c;
-            color: white;
-            font-weight: bold;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        .pdf-form button:hover {
-            background: #c9577c;
-        }
-
         .report-filter {
             display: flex;
             flex-wrap: wrap;
@@ -215,7 +161,9 @@
             font-weight: bold;
         }
 
+        .report-filter-field input[type="date"],
         .report-filter-field select {
+            width: 100%;
             min-height: 40px;
             padding: 9px 11px;
             border: 1px solid #e8c5d2;
@@ -228,6 +176,7 @@
 
         .report-filter-actions {
             display: flex;
+            flex-wrap: wrap;
             gap: 8px;
         }
 
@@ -258,6 +207,15 @@
         .report-filter-reset {
             background: white;
             color: #c9577c;
+        }
+
+        .report-filter-pdf {
+            background: #fff0f5;
+            color: #c9577c;
+        }
+
+        .report-filter-pdf:hover {
+            background: #f9dbe6;
         }
 
         .stats {
@@ -405,17 +363,6 @@
                 line-height: 1.5;
             }
 
-            .pdf-form {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .pdf-form input[type="date"],
-            .pdf-form select,
-            .pdf-form button {
-                width: 100%;
-            }
-
             .report-filter {
                 align-items: stretch;
                 flex-direction: column;
@@ -425,12 +372,14 @@
                 min-width: 100%;
             }
 
+            .report-filter-field input[type="date"],
             .report-filter-field select {
                 width: 100%;
             }
 
             .report-filter-actions {
                 width: 100%;
+                flex-direction: column;
             }
 
             .report-filter-button,
@@ -517,89 +466,33 @@
         </div>
 
 
-        {{-- BARU: filter periode + unduh PDF --}}
-        <form
-            action="{{ route('owner.laporan.pdf') }}"
-            method="GET"
-            target="_blank"
-            class="pdf-form"
-        >
-
-            <div>
-                <label for="dari">Dari tanggal</label>
-                <input
-                    type="date"
-                    id="dari"
-                    name="dari"
-                    value="{{ now()->startOfMonth()->format('Y-m-d') }}"
-                    required
-                >
-            </div>
-
-            <div>
-                <label for="sampai">Sampai tanggal</label>
-                <input
-                    type="date"
-                    id="sampai"
-                    name="sampai"
-                    value="{{ now()->format('Y-m-d') }}"
-                    required
-                >
-            </div>
-
-            <div>
-                <label for="pdf_metode_pembayaran">Metode pembayaran</label>
-                <select id="pdf_metode_pembayaran" name="metode_pembayaran">
-                    <option value="" {{ $filterMetode === '' ? 'selected' : '' }}>
-                        Semua Metode
-                    </option>
-                    <option value="cash" {{ $filterMetode === 'cash' ? 'selected' : '' }}>
-                        Tunai
-                    </option>
-                    <option value="qris" {{ $filterMetode === 'qris' ? 'selected' : '' }}>
-                        QRIS
-                    </option>
-                    <option value="transfer" {{ $filterMetode === 'transfer' ? 'selected' : '' }}>
-                        Transfer
-                    </option>
-                </select>
-            </div>
-
-            <div>
-                <label for="pdf_status_pesanan">Status pesanan</label>
-                <select id="pdf_status_pesanan" name="status_pesanan">
-                    <option value="" {{ $filterStatus === '' ? 'selected' : '' }}>
-                        Semua Status
-                    </option>
-                    <option value="menunggu" {{ $filterStatus === 'menunggu' ? 'selected' : '' }}>
-                        Menunggu Konfirmasi
-                    </option>
-                    <option value="dikonfirmasi" {{ $filterStatus === 'dikonfirmasi' ? 'selected' : '' }}>
-                        Dikonfirmasi
-                    </option>
-                    <option value="dibuat" {{ $filterStatus === 'dibuat' ? 'selected' : '' }}>
-                        Sedang Dibuat
-                    </option>
-                    <option value="siap_diambil" {{ $filterStatus === 'siap_diambil' ? 'selected' : '' }}>
-                        Siap Diambil
-                    </option>
-                    <option value="selesai" {{ $filterStatus === 'selesai' ? 'selected' : '' }}>
-                        Selesai
-                    </option>
-                </select>
-            </div>
-
-            <button type="submit">
-                📄 Unduh Laporan PDF
-            </button>
-
-        </form>
-
         <form
             action="{{ route('owner.laporan') }}"
             method="GET"
             class="report-filter"
         >
+            <div class="report-filter-field">
+                <label for="dari">Dari tanggal</label>
+                <input
+                    type="date"
+                    id="dari"
+                    name="dari"
+                    value="{{ $filterDari }}"
+                    required
+                >
+            </div>
+
+            <div class="report-filter-field">
+                <label for="sampai">Sampai tanggal</label>
+                <input
+                    type="date"
+                    id="sampai"
+                    name="sampai"
+                    value="{{ $filterSampai }}"
+                    required
+                >
+            </div>
+
             <div class="report-filter-field">
                 <label for="metode_pembayaran">Metode Pembayaran</label>
                 <select id="metode_pembayaran" name="metode_pembayaran">
@@ -647,6 +540,14 @@
                 <a class="report-filter-reset" href="{{ route('owner.laporan') }}">
                     Reset
                 </a>
+                <button
+                    class="report-filter-button report-filter-pdf"
+                    type="submit"
+                    formaction="{{ route('owner.laporan.pdf') }}"
+                    formtarget="_blank"
+                >
+                    📄 Unduh Laporan PDF
+                </button>
             </div>
         </form>
 
@@ -722,7 +623,7 @@
 
                     <tr>
 
-                        <th>Tanggal</th>
+                        <th>Tanggal Transaksi</th>
 
                         <th>No. Pesanan</th>
 
@@ -750,8 +651,8 @@
                             <td>
 
                                 {{ \Carbon\Carbon::parse(
-                                    $item->tanggal_pesan
-                                )->format('d/m/Y') }}
+                                    $item->tanggal_transaksi
+                                )->format('d/m/Y H:i') }}
 
                             </td>
 
@@ -765,7 +666,9 @@
 
                             <td>
 
-                                {{ $item->user->nama_users ?? '-' }}
+                                {{ $item->user->nama_users
+                                    ?? $item->customer->nama_customer
+                                    ?? '-' }}
 
                             </td>
 

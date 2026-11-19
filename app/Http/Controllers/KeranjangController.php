@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Produk;
 use App\Models\UkuranProduk;
+use App\Support\BatasJumlahPesanan;
 use Illuminate\Http\Request;
 
 class KeranjangController extends Controller
@@ -14,6 +15,7 @@ class KeranjangController extends Controller
     public function index()
     {
         $keranjang = session()->get('keranjang', []);
+        $jumlahTotal = BatasJumlahPesanan::total($keranjang);
 
         $items = [];
         $total = 0;
@@ -48,7 +50,7 @@ class KeranjangController extends Controller
             $total += $subtotal;
         }
 
-        return view('keranjang', compact('items', 'total'));
+        return view('keranjang', compact('items', 'total', 'jumlahTotal'));
     }
 
     /**
@@ -58,7 +60,7 @@ class KeranjangController extends Controller
     {
         $validated = $request->validate([
             'id_ukuran' => ['required', 'integer'],
-            'jumlah' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'jumlah' => ['nullable', 'integer', 'min:1', 'max:' . BatasJumlahPesanan::MAKSIMAL_KUE],
         ]);
 
         // Cari produk yang masih aktif.
@@ -85,10 +87,17 @@ class KeranjangController extends Controller
 
         // Ambil jumlah yang dikirim dari form.
         $jumlah = (int) ($validated['jumlah'] ?? 1);
-        $jumlah = max(1, min(100, $jumlah));
 
         // Ambil data keranjang dari session.
         $keranjang = session()->get('keranjang', []);
+        if (
+            BatasJumlahPesanan::total($keranjang) + $jumlah >
+            BatasJumlahPesanan::MAKSIMAL_KUE
+        ) {
+            return back()
+                ->withInput()
+                ->with('error', BatasJumlahPesanan::pesanMaksimal());
+        }
 
         // Buat key berdasarkan ID produk dan ID ukuran.
         $key = $produk->id_produk . '_' . $ukuran->id_ukuran;
@@ -97,10 +106,10 @@ class KeranjangController extends Controller
         if (isset($keranjang[$key])) {
             $jumlahLama = (int) ($keranjang[$key]['jumlah'] ?? 1);
 
-            if (($jumlahLama + $jumlah) > 100) {
+            if (($jumlahLama + $jumlah) > BatasJumlahPesanan::MAKSIMAL_KUE) {
                 return redirect()
                     ->route('keranjang.index')
-                    ->with('error', 'Jumlah maksimal satu ukuran kue adalah 100.');
+                    ->with('error', BatasJumlahPesanan::pesanMaksimal());
             }
 
             $keranjang[$key]['jumlah'] = $jumlahLama + $jumlah;
@@ -168,10 +177,13 @@ class KeranjangController extends Controller
         $jumlah = (int) ($data['jumlah'] ?? 1);
 
         if ($validated['aksi'] === 'tambah') {
-            if ($jumlah >= 100) {
+            if (
+                $jumlah >= BatasJumlahPesanan::MAKSIMAL_KUE ||
+                BatasJumlahPesanan::total($keranjang) >= BatasJumlahPesanan::MAKSIMAL_KUE
+            ) {
                 return back()->with(
                     'error',
-                    'Jumlah maksimal satu ukuran kue adalah 100.'
+                    BatasJumlahPesanan::pesanMaksimal()
                 );
             }
 
