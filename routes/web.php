@@ -27,6 +27,7 @@ use App\Http\Controllers\OwnerProdukController;
 use App\Http\Controllers\BuktiPembayaranController;
 use App\Http\Controllers\OwnerLaporanPdfController;
 use App\Http\Controllers\AdminTambahPesananController;
+use App\Http\Controllers\CustomCakeOrderController;
 
 
 /*
@@ -94,6 +95,21 @@ Route::middleware(['auth', CekRole::class . ':admin'])->group(function () {
     Route::post('/admin/pesanan/{id}/status', [AdminPesananController::class, 'updateStatus'])
         ->name('admin.pesanan.status');
 
+    Route::get('/admin/permintaan-custom', [CustomCakeOrderController::class, 'adminIndex'])
+        ->name('admin.custom-orders.index');
+
+    Route::put('/admin/permintaan-custom/harga-dasar', [CustomCakeOrderController::class, 'updateBasePrices'])
+        ->name('admin.custom-orders.base-prices.update');
+
+    Route::delete('/admin/permintaan-custom/harga-dasar/{ukuran}', [CustomCakeOrderController::class, 'deleteBasePrice'])
+        ->name('admin.custom-orders.base-prices.delete');
+
+    Route::get('/admin/permintaan-custom/{id}', [CustomCakeOrderController::class, 'adminShow'])
+        ->name('admin.custom-orders.show');
+
+    Route::post('/admin/permintaan-custom/{id}/proses', [CustomCakeOrderController::class, 'quote'])
+        ->name('admin.custom-orders.quote');
+
     Route::get('/admin/pesanan/{id}/struk', [StrukController::class, 'admin'])
         ->name('struk.admin');
 
@@ -101,6 +117,9 @@ Route::middleware(['auth', CekRole::class . ':admin'])->group(function () {
     // Pembayaran Admin
     Route::get('/admin/pembayaran', [AdminPembayaranController::class, 'index'])
         ->name('admin.pembayaran');
+
+    Route::get('/admin/pembayaran/riwayat/{id}/bukti', [AdminPembayaranController::class, 'riwayatBukti'])
+        ->name('admin.pembayaran.riwayatBukti');
 
     Route::get('/admin/pembayaran/{id}/bukti', [AdminPembayaranController::class, 'bukti'])
         ->name('admin.pembayaran.bukti');
@@ -204,6 +223,27 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/katalog', [KatalogController::class, 'index'])
         ->name('katalog');
+
+    Route::get('/pesan-kue-custom', [CustomCakeOrderController::class, 'create'])
+        ->name('custom-orders.create');
+
+    Route::post('/pesan-kue-custom', [CustomCakeOrderController::class, 'store'])
+        ->name('custom-orders.store');
+
+    Route::get('/permintaan-custom-saya', [CustomCakeOrderController::class, 'index'])
+        ->name('custom-orders.index');
+
+    Route::get('/permintaan-custom/{id}/referensi', [CustomCakeOrderController::class, 'reference'])
+        ->name('custom-orders.reference');
+
+    Route::post('/permintaan-custom/{id}/setuju', [CustomCakeOrderController::class, 'accept'])
+        ->name('custom-orders.accept');
+
+    Route::post('/permintaan-custom/{id}/batal', [CustomCakeOrderController::class, 'cancel'])
+        ->name('custom-orders.cancel');
+
+    Route::get('/permintaan-custom/{id}/checkout', [CustomCakeOrderController::class, 'checkout'])
+        ->name('custom-orders.checkout');
 
     Route::get('/produk/{id}', [DetailProdukController::class, 'show'])
         ->name('produk.detail');

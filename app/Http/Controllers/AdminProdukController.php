@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Produk;
+use App\Support\NominalRupiah;
 use App\Models\UkuranProduk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -27,6 +28,12 @@ class AdminProdukController extends Controller
 
     public function store(Request $request)
     {
+        $request->merge([
+            'ukuran_produk' => NominalRupiah::normalisasiHargaUkuran(
+                $request->input('ukuran_produk')
+            ),
+        ]);
+
         $validated = $request->validate([
             'nama_kue' => 'required|string|max:100',
             'deskripsi' => 'nullable|string',
@@ -114,6 +121,12 @@ class AdminProdukController extends Controller
     {
         $produk = Produk::with('ukuranProduks')
             ->findOrFail($id);
+
+        $request->merge([
+            'ukuran_produk' => NominalRupiah::normalisasiHargaUkuran(
+                $request->input('ukuran_produk')
+            ),
+        ]);
 
         $validated = $request->validate([
             'nama_kue' => 'required|string|max:100',

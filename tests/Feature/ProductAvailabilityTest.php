@@ -7,6 +7,7 @@ use App\Http\Controllers\DetailProdukController;
 use App\Http\Controllers\KatalogController;
 use App\Http\Controllers\KeranjangController;
 use App\Http\Controllers\PreOrderController;
+use App\Http\Controllers\AdminProdukController;
 use App\Support\BatasJumlahPesanan;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
@@ -89,6 +90,18 @@ class ProductAvailabilityTest extends TestCase
             $productNames
         );
         $this->assertNotContains('Kue Habis', $productNames);
+    }
+
+    public function test_admin_product_page_keeps_custom_order_navigation_visible(): void
+    {
+        $html = app(AdminProdukController::class)->index()->render();
+
+        $this->assertStringContainsString('Permintaan Custom', $html);
+        $this->assertStringContainsString(route('admin.custom-orders.index'), $html);
+        $this->assertStringContainsString('🏠', $html);
+        $this->assertStringContainsString('🛍️', $html);
+        $this->assertStringContainsString('🚪', $html);
+        $this->assertStringContainsString('margin-top: auto;', $html);
     }
 
     public function test_preorder_only_offers_available_sizes(): void

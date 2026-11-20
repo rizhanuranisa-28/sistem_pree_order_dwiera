@@ -72,4 +72,13 @@ class Pesanan extends Model
             'id_jadwal'
         );
     }
+
+    public function customCakeOrder()
+    {
+        return $this->hasOne(
+            CustomCakeOrder::class,
+            'id_pesanan',
+            'id_pesanan'
+        );
+    }
 }

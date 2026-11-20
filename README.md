@@ -14,15 +14,20 @@ Aplikasi web untuk membantu pelanggan melihat produk Dwiera Cake, membuat pesana
 - Registrasi, login, dan pengelolaan profil.
 - Melihat katalog dan detail produk beserta pilihan ukuran.
 - Menambahkan produk ke keranjang dan membuat pesanan pre-order.
+- Mengajukan desain kue custom, mengirim foto referensi, dan menyetujui penawaran harga admin.
+- Melanjutkan pesanan custom yang disetujui ke checkout, jadwal pengambilan, dan pembayaran yang sama dengan pesanan katalog.
 - Memilih tanggal dan jam pengambilan.
-- Memilih pembayaran cash atau transfer.
-- Mengunggah dan memperbarui bukti transfer.
-- Melihat pesanan dan status pemeriksaan pembayaran.
+- Memilih pembayaran cash, transfer, atau QRIS.
+- Mengunggah atau mengirim ulang bukti transfer/QRIS setelah dikembalikan admin; bukti sebelumnya tetap tersimpan.
+- Melihat notifikasi penawaran custom dan bukti pembayaran yang dikembalikan.
+- Mengubah pesanan reguler hanya sebelum admin mulai memprosesnya.
 
 ### Admin dan owner
 
 - Mengelola produk, pesanan, dan pembayaran sesuai hak akses.
-- Memeriksa bukti transfer dan memperbarui status pembayaran.
+- Memeriksa permintaan kue custom, menentukan biaya dekorasi, mengirim penawaran harga, atau menolak dengan alasan.
+- Melihat jumlah pesanan, permintaan custom, dan bukti pembayaran yang belum diperiksa; indikator hilang setelah status ditangani.
+- Memeriksa riwayat bukti transfer/QRIS lama dan terbaru, lalu menerima atau mengembalikan bukti dengan alasan.
 - Melihat ringkasan, laporan, dan informasi operasional yang tersedia di aplikasi.
 
 ## Teknologi
@@ -84,6 +89,8 @@ Pasang perangkat berikut sebelum menjalankan project:
    php artisan key:generate
    php artisan migrate
    ```
+
+   Migrasi `2026_11_20_000001_create_custom_cake_orders_table` menambahkan tabel permintaan custom, sedangkan `2026_11_20_000002_create_custom_cake_base_prices_table` menyimpan harga dasar untuk tiap ukuran. Admin dapat mengubah harga, menambahkan ukuran baru (1 sampai 500 cm), atau menghapus ukuran dari halaman Permintaan Custom. Perubahan berlaku untuk permintaan baru; permintaan lama tetap memakai harga saat diajukan. Foto referensi disimpan pada disk privat `local`, jadi tidak perlu membuat symlink `storage:link`.
 
 6. Build aset frontend dan jalankan server lokal:
 

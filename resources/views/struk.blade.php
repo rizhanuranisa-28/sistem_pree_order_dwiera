@@ -275,6 +275,20 @@
 
     <div class="line"></div>
 
+    @if($pesanan->customCakeOrder)
+        <div class="item">
+            <div class="item-name">
+                Kue Custom — {{ $pesanan->customCakeOrder->ukuran_cm }} cm
+            </div>
+            <div class="row"><span>Tema</span><span>{{ $pesanan->customCakeOrder->tema }}</span></div>
+            <div class="row"><span>Tulisan</span><span>{{ $pesanan->customCakeOrder->tulisan }}</span></div>
+            <div class="row"><span>Dekorasi</span><span>{{ $pesanan->customCakeOrder->dekorasi }}</span></div>
+            <div class="row"><span>Harga dasar</span><span>{{ $rp($pesanan->customCakeOrder->harga_dasar) }}</span></div>
+            <div class="row"><span>Biaya dekorasi</span><span>{{ $rp($pesanan->customCakeOrder->biaya_dekorasi) }}</span></div>
+            <div class="row"><span>Total item custom</span><span>{{ $rp($pesanan->customCakeOrder->total_harga) }}</span></div>
+        </div>
+    @endif
+
     @foreach($pesanan->detailPesanans as $detail)
         <div class="item">
             <div class="item-name">

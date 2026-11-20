@@ -422,13 +422,24 @@
     <nav class="menu">
 
         <a href="{{ route('admin') }}">
-            <span class="menu-icon">⌂</span>
+            <span class="menu-icon">🏠</span>
             <span>Dashboard</span>
         </a>
 
         <a href="{{ route('admin.pesanan') }}">
-            <span class="menu-icon">🛍</span>
+            <span class="menu-icon">🛍️</span>
             <span>Pesanan</span>
+            @if (($adminUnreadOrders ?? 0) > 0)
+                <span class="notification-badge" aria-label="{{ $adminUnreadOrders }} pesanan belum diperiksa">{{ $adminUnreadOrders }}</span>
+            @endif
+        </a>
+
+        <a href="{{ route('admin.custom-orders.index') }}">
+            <span class="menu-icon">🎂</span>
+            <span>Permintaan Custom</span>
+            @if (($adminUnreadCustomOrders ?? 0) > 0)
+                <span class="notification-badge" aria-label="{{ $adminUnreadCustomOrders }} permintaan custom belum diperiksa">{{ $adminUnreadCustomOrders }}</span>
+            @endif
         </a>
 
         <a href="{{ route('admin.produk') }}" class="active">
@@ -439,6 +450,9 @@
         <a href="{{ route('admin.pembayaran') }}">
             <span class="menu-icon">💳</span>
             <span>Pembayaran</span>
+            @if (($adminUnreadPayments ?? 0) > 0)
+                <span class="notification-badge" aria-label="{{ $adminUnreadPayments }} bukti pembayaran belum diperiksa">{{ $adminUnreadPayments }}</span>
+            @endif
         </a>
 
     </nav>
@@ -447,7 +461,7 @@
         <form action="{{ route('logout') }}" method="POST">
             @csrf
             <button type="submit">
-                <span>↪</span>
+                <span>🚪</span>
                 <span>Logout</span>
             </button>
         </form>
@@ -582,11 +596,12 @@
                                     <label>Harga (Rp)</label>
 
                                     <input
-                                        type="number"
+                                        type="text"
                                         name="ukuran_produk[{{ $index }}][harga]"
                                         value="{{ $ukuran['harga'] ?? '' }}"
-                                        placeholder="Contoh: 150000"
-                                        min="0"
+                                        inputmode="numeric"
+                                        data-currency-input
+                                        placeholder="Contoh: 150.000"
                                         required
                                     >
 
@@ -729,10 +744,11 @@
                 <div class="form-group">
                     <label>Harga (Rp)</label>
                     <input
-                        type="number"
+                        type="text"
                         name="ukuran_produk[${nomorUkuran}][harga]"
-                        placeholder="Contoh: 200000"
-                        min="0"
+                        inputmode="numeric"
+                        data-currency-input
+                        placeholder="Contoh: 200.000"
                         required
                     >
                 </div>
@@ -789,6 +805,8 @@
         });
     }
 </script>
+
+@include('partials.currency_input_formatter')
 
 </body>
 </html>

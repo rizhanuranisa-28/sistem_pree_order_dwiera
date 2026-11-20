@@ -328,9 +328,11 @@
             <div id="bagianCash" class="hidden">
                 <div class="field">
                     <label for="jumlah_bayar">Uang Diterima (Rp) *</label>
-                    <input type="number" id="jumlah_bayar"
+                    <input type="text" id="jumlah_bayar"
                            name="jumlah_bayar"
-                           min="0" step="1"
+                           inputmode="numeric"
+                           data-currency-input
+                           placeholder="Contoh: 100.000"
                            value="{{ old('jumlah_bayar') }}">
                 </div>
 
@@ -539,7 +541,7 @@
         document.getElementById('totalHarga').textContent =
             formatRupiah(total);
 
-        const uang = Number(inputBayar.value) || 0;
+        const uang = Number(inputBayar.value.replace(/\./g, '')) || 0;
 
         document.getElementById('kembalian').textContent =
             formatRupiah(Math.max(0, uang - total));
@@ -588,6 +590,8 @@
 
     aturMetodePembayaran();
 </script>
+
+@include('partials.currency_input_formatter')
 
 </body>
 </html>

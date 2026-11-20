@@ -19,6 +19,7 @@ class StrukController extends Controller
         $pesanan = Pesanan::with([
             'user',
             'detailPesanans.produk',
+            'customCakeOrder',
             'pembayaran',
             'jadwalPengambilan',
         ])->findOrFail($id);

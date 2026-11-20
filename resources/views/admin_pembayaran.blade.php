@@ -432,6 +432,31 @@
             white-space: nowrap;
         }
 
+        .payment-order-detail {
+            min-width: 210px;
+            max-width: 280px;
+            color: #66515a;
+            font-size: 12px;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .payment-order-detail a,
+        .payment-order-detail small {
+            display: block;
+        }
+
+        .payment-order-detail a {
+            margin-bottom: 4px;
+            color: #bd5978;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .payment-order-detail small {
+            margin-top: 2px;
+        }
+
         .status {
             display: inline-block;
             padding: 6px 11px;
@@ -576,6 +601,46 @@
             border: 1px solid #f0e2e7;
         }
 
+        .proof-history {
+            min-width: 150px;
+            margin-top: 9px;
+            font-size: 11px;
+        }
+
+        .proof-history summary {
+            color: #bd5978;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .proof-history-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-top: 8px;
+            padding: 8px;
+            border: 1px solid #f0e2e7;
+            border-radius: 8px;
+            background: #fff9fb;
+        }
+
+        .proof-history-item .proof-image {
+            flex: 0 0 48px;
+            width: 48px;
+            height: 48px;
+        }
+
+        .proof-history-info {
+            min-width: 0;
+            overflow-wrap: anywhere;
+            line-height: 1.5;
+        }
+
+        .proof-history-info a {
+            color: #bd5978;
+            font-weight: bold;
+        }
+
         .empty {
             text-align: center;
             padding: 35px;
@@ -651,13 +716,24 @@
 
         <div class="dots-menu" id="dotsMenu">
             <a href="{{ route('admin') }}">
-                <span class="menu-icon">⌂</span>
+                <span class="menu-icon">🏠</span>
                 <span>Dashboard</span>
             </a>
 
             <a href="{{ route('admin.pesanan') }}">
-                <span class="menu-icon">🛍</span>
+                <span class="menu-icon">🛍️</span>
                 <span>Pesanan</span>
+                @if (($adminUnreadOrders ?? 0) > 0)
+                    <span class="notification-badge" aria-label="{{ $adminUnreadOrders }} pesanan belum diperiksa">{{ $adminUnreadOrders }}</span>
+                @endif
+            </a>
+
+            <a href="{{ route('admin.custom-orders.index') }}">
+                <span class="menu-icon">🎂</span>
+                <span>Permintaan Custom</span>
+                @if (($adminUnreadCustomOrders ?? 0) > 0)
+                    <span class="notification-badge" aria-label="{{ $adminUnreadCustomOrders }} permintaan custom belum diperiksa">{{ $adminUnreadCustomOrders }}</span>
+                @endif
             </a>
 
             <a href="{{ route('admin.produk') }}">
@@ -668,6 +744,9 @@
             <a href="{{ route('admin.pembayaran') }}" class="active">
                 <span class="menu-icon">💳</span>
                 <span>Pembayaran</span>
+                @if (($adminUnreadPayments ?? 0) > 0)
+                    <span class="notification-badge" aria-label="{{ $adminUnreadPayments }} bukti pembayaran belum diperiksa">{{ $adminUnreadPayments }}</span>
+                @endif
             </a>
 
             <hr>
@@ -675,7 +754,7 @@
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button type="submit">
-                    <span class="menu-icon">↪</span>
+                    <span class="menu-icon">🚪</span>
                     <span>Logout</span>
                 </button>
             </form>
@@ -691,13 +770,24 @@
 
         <nav class="menu">
             <a href="{{ route('admin') }}">
-                <span class="menu-icon">⌂</span>
+                <span class="menu-icon">🏠</span>
                 <span>Dashboard</span>
             </a>
 
             <a href="{{ route('admin.pesanan') }}">
-                <span class="menu-icon">🛍</span>
+                <span class="menu-icon">🛍️</span>
                 <span>Pesanan</span>
+                @if (($adminUnreadOrders ?? 0) > 0)
+                    <span class="notification-badge" aria-label="{{ $adminUnreadOrders }} pesanan belum diperiksa">{{ $adminUnreadOrders }}</span>
+                @endif
+            </a>
+
+            <a href="{{ route('admin.custom-orders.index') }}">
+                <span class="menu-icon">🎂</span>
+                <span>Permintaan Custom</span>
+                @if (($adminUnreadCustomOrders ?? 0) > 0)
+                    <span class="notification-badge" aria-label="{{ $adminUnreadCustomOrders }} permintaan custom belum diperiksa">{{ $adminUnreadCustomOrders }}</span>
+                @endif
             </a>
 
             <a href="{{ route('admin.produk') }}">
@@ -708,6 +798,9 @@
             <a href="{{ route('admin.pembayaran') }}" class="active">
                 <span class="menu-icon">💳</span>
                 <span>Pembayaran</span>
+                @if (($adminUnreadPayments ?? 0) > 0)
+                    <span class="notification-badge" aria-label="{{ $adminUnreadPayments }} bukti pembayaran belum diperiksa">{{ $adminUnreadPayments }}</span>
+                @endif
             </a>
         </nav>
 
@@ -715,7 +808,7 @@
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button type="submit">
-                    <span>↪</span>
+                    <span>🚪</span>
                     <span>Logout</span>
                 </button>
             </form>
@@ -842,6 +935,7 @@
                                 <th>No. Pembayaran</th>
                                 <th>No. Pesanan</th>
                                 <th>Nama Pelanggan</th>
+                                <th>Rincian Pesanan</th>
                                 <th>Tanggal Bayar</th>
                                 <th>Metode</th>
                                 <th>Jumlah Bayar</th>
@@ -909,6 +1003,9 @@
                                         <span class="order-id">
                                             #PAY{{ str_pad($item->id_pembayaran, 4, '0', STR_PAD_LEFT) }}
                                         </span>
+                                        @if($butuhBukti && !$lunas && !empty($item->bukti_pembayaran) && $statusBukti === 'menunggu')
+                                            <span class="unread-dot" title="Bukti belum diperiksa admin" aria-label="Bukti belum diperiksa admin"></span>
+                                        @endif
                                     </td>
 
                                     <td>
@@ -921,6 +1018,31 @@
                                         @if($offline)
                                             <br>
                                             <small style="color:#c66b88;">Pesanan offline</small>
+                                        @endif
+                                    </td>
+
+                                    <td class="payment-order-detail">
+                                        @if($pesanan && $pesanan->customCakeOrder)
+                                            @php
+                                                $customOrder = $pesanan->customCakeOrder;
+                                            @endphp
+                                            <a href="{{ route('admin.custom-orders.show', $customOrder->id_custom_order) }}">
+                                                Kue Custom #{{ $customOrder->id_custom_order }}
+                                            </a>
+                                            <small>Ukuran: {{ $customOrder->ukuran_cm }} cm</small>
+                                            <small>Tema: {{ $customOrder->tema }}</small>
+                                            <small><strong>Tulisan: {{ $customOrder->tulisan }}</strong></small>
+                                            <small>Dekorasi: {{ $customOrder->dekorasi }}</small>
+                                            <small>Harga custom: Rp{{ number_format($customOrder->total_harga, 0, ',', '.') }}</small>
+                                        @elseif($pesanan && $pesanan->detailPesanans->isNotEmpty())
+                                            @foreach($pesanan->detailPesanans as $detail)
+                                                <small>
+                                                    {{ $detail->produk->nama_kue ?? 'Produk' }}
+                                                    ({{ $detail->ukuran ?? '-' }}) x{{ $detail->jumlah }}
+                                                </small>
+                                            @endforeach
+                                        @else
+                                            -
                                         @endif
                                     </td>
 
@@ -1002,6 +1124,37 @@
                                         @else
                                             <span style="color:#999;">-</span>
                                         @endif
+
+                                        @if($item->riwayatBukti->isNotEmpty())
+                                            <details class="proof-history">
+                                                <summary>Riwayat Bukti ({{ $item->riwayatBukti->count() }})</summary>
+                                                @foreach($item->riwayatBukti->sortByDesc('id_riwayat') as $riwayat)
+                                                    @php
+                                                        $urlRiwayatBukti = route(
+                                                            'admin.pembayaran.riwayatBukti',
+                                                            $riwayat->id_riwayat
+                                                        );
+                                                    @endphp
+                                                    <div class="proof-history-item">
+                                                        <a href="{{ $urlRiwayatBukti }}" target="_blank" rel="noopener noreferrer">
+                                                            <img src="{{ $urlRiwayatBukti }}" alt="Bukti pembayaran #{{ $riwayat->id_riwayat }}" class="proof-image" loading="lazy">
+                                                        </a>
+                                                        <div class="proof-history-info">
+                                                            <strong>Bukti #{{ $riwayat->id_riwayat }}</strong><br>
+                                                            {{ $riwayat->tanggal_upload
+                                                                ? \Carbon\Carbon::parse($riwayat->tanggal_upload)->format('d/m/Y H:i')
+                                                                : '-' }}
+                                                            <br>
+                                                            {{ ucfirst($riwayat->status ?? 'menunggu') }}
+                                                            @if($riwayat->alasan_pengembalian)
+                                                                <br><strong>Alasan:</strong> {{ $riwayat->alasan_pengembalian }}
+                                                            @endif
+                                                            <br><a href="{{ $urlRiwayatBukti }}" target="_blank" rel="noopener noreferrer">Lihat bukti</a>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </details>
+                                        @endif
                                     </td>
 
                                     <td>
@@ -1027,11 +1180,11 @@
 
                                                 <input
                                                     class="cash-input"
-                                                    type="number"
+                                                    type="text"
                                                     name="jumlah_bayar"
-                                                    min="{{ ceil($totalBayar) }}"
-                                                    step="1"
-                                                    placeholder="Uang diterima (Rp)"
+                                                    inputmode="numeric"
+                                                    data-currency-input
+                                                    placeholder="Uang diterima (Rp), contoh: 100.000"
                                                     aria-label="Uang diterima untuk pembayaran cash"
                                                     required
                                                 >
@@ -1207,6 +1360,8 @@
         });
     })();
 </script>
+
+@include('partials.currency_input_formatter')
 
 </body>
 </html>

@@ -7,6 +7,7 @@ use App\Models\UkuranProduk;
 use App\Models\JadwalPengambilan;
 use App\Models\Pesanan;
 use App\Models\DetailPesanan;
+use App\Models\CustomCakeOrder;
 use App\Models\Pembayaran;
 use App\Support\BatasJumlahPesanan;
 use App\Support\ValidasiJadwal;
@@ -94,14 +95,34 @@ class CheckoutController extends Controller
     public function keranjang()
     {
         $keranjang = session()->get('keranjang', []);
+        $customCakeOrder = null;
+        $customOrderId = session()->get('custom_cake_order_id');
 
-        if (empty($keranjang)) {
+        if ($customOrderId) {
+            $customCakeOrder = CustomCakeOrder::where('id_custom_order', $customOrderId)
+                ->where('id_users', Auth::user()->id_users)
+                ->where('status', CustomCakeOrder::STATUS_DISETUJUI)
+                ->whereNull('id_pesanan')
+                ->first();
+
+            if (!$customCakeOrder || $customCakeOrder->biaya_dekorasi === null) {
+                session()->forget('custom_cake_order_id');
+
+                return redirect()
+                    ->route('custom-orders.index')
+                    ->with('error', 'Permintaan custom tidak tersedia untuk checkout.');
+            }
+        }
+
+        if (empty($keranjang) && !$customCakeOrder) {
             return redirect()
                 ->route('keranjang.index')
                 ->with('error', 'Keranjang kamu masih kosong.');
         }
 
-        if (BatasJumlahPesanan::total($keranjang) > BatasJumlahPesanan::MAKSIMAL_KUE) {
+        $jumlahKue = BatasJumlahPesanan::total($keranjang) + ($customCakeOrder ? 1 : 0);
+
+        if ($jumlahKue > BatasJumlahPesanan::MAKSIMAL_KUE) {
             return redirect()
                 ->route('keranjang.index')
                 ->with('error', BatasJumlahPesanan::pesanMaksimal());
@@ -146,10 +167,15 @@ class CheckoutController extends Controller
             $total += $subtotal;
         }
 
-        if (empty($items)) {
+        if (empty($items) && !$customCakeOrder) {
             return redirect()
                 ->route('keranjang.index')
                 ->with('error', 'Produk atau ukuran di keranjang sudah tidak tersedia. Silakan periksa kembali keranjang kamu.');
+        }
+
+        if ($customCakeOrder) {
+            $total += (float) $customCakeOrder->harga_dasar
+                + (float) $customCakeOrder->biaya_dekorasi;
         }
 
         $sekarang = now(config('app.timezone', 'Asia/Jakarta'));
@@ -159,6 +185,7 @@ class CheckoutController extends Controller
 
         return view('checkout-keranjang', compact(
             'items',
+            'customCakeOrder',
             'total',
             'batasMinimalJadwal',
             'waktuPalingCepat',
@@ -193,14 +220,35 @@ class CheckoutController extends Controller
         ]);
 
         $keranjang = session()->get('keranjang', []);
+        $customOrderId = session()->get('custom_cake_order_id');
+        $customCakeOrder = null;
 
-        if (empty($keranjang)) {
+        if ($customOrderId) {
+            $customCakeOrder = CustomCakeOrder::where('id_custom_order', $customOrderId)
+                ->where('id_users', Auth::user()->id_users)
+                ->where('status', CustomCakeOrder::STATUS_DISETUJUI)
+                ->whereNull('id_pesanan')
+                ->first();
+
+            if (!$customCakeOrder || $customCakeOrder->biaya_dekorasi === null) {
+                session()->forget('custom_cake_order_id');
+
+                return redirect()
+                    ->route('custom-orders.index')
+                    ->with('error', 'Permintaan custom tidak tersedia untuk checkout.');
+            }
+        }
+
+        if (empty($keranjang) && !$customCakeOrder) {
             return redirect()
                 ->route('keranjang.index')
                 ->with('error', 'Keranjang kamu masih kosong.');
         }
 
-        if (BatasJumlahPesanan::total($keranjang) > BatasJumlahPesanan::MAKSIMAL_KUE) {
+        if (
+            BatasJumlahPesanan::total($keranjang) + ($customCakeOrder ? 1 : 0)
+            > BatasJumlahPesanan::MAKSIMAL_KUE
+        ) {
             return redirect()
                 ->route('keranjang.index')
                 ->with('error', BatasJumlahPesanan::pesanMaksimal());
@@ -229,7 +277,8 @@ class CheckoutController extends Controller
                 $jamPengambilan,
                 $metode,
                 $catatan,
-                $nomorTelepon
+                $nomorTelepon,
+                $customOrderId
             ) {
                 return DB::transaction(function () use (
                     $keranjang,
@@ -237,7 +286,8 @@ class CheckoutController extends Controller
                     $jamPengambilan,
                     $metode,
                     $catatan,
-                    $nomorTelepon
+                    $nomorTelepon,
+                    $customOrderId
                 ) {
                     // Periksa ulang jadwal sebelum menyimpan.
                     $errorJadwal = ValidasiJadwal::cek(
@@ -297,7 +347,38 @@ class CheckoutController extends Controller
                         $total += $subtotal;
                     }
 
-                    if (empty($detail)) {
+                    $customCakeOrder = null;
+                    if ($customOrderId) {
+                        $customCakeOrder = CustomCakeOrder::where('id_custom_order', $customOrderId)
+                            ->where('id_users', Auth::user()->id_users)
+                            ->lockForUpdate()
+                            ->first();
+
+                        if (
+                            !$customCakeOrder ||
+                            $customCakeOrder->status !== CustomCakeOrder::STATUS_DISETUJUI ||
+                            $customCakeOrder->biaya_dekorasi === null ||
+                            $customCakeOrder->id_pesanan
+                        ) {
+                            throw ValidationException::withMessages([
+                                'custom_order' => 'Permintaan custom sudah tidak tersedia untuk checkout.',
+                            ]);
+                        }
+
+                        if (
+                            count($detail) + 1 >
+                            BatasJumlahPesanan::MAKSIMAL_KUE
+                        ) {
+                            throw ValidationException::withMessages([
+                                'keranjang' => BatasJumlahPesanan::pesanMaksimal(),
+                            ]);
+                        }
+
+                        $total += (float) $customCakeOrder->harga_dasar
+                            + (float) $customCakeOrder->biaya_dekorasi;
+                    }
+
+                    if (empty($detail) && !$customCakeOrder) {
                         throw ValidationException::withMessages([
                             'keranjang' => 'Tidak ada produk yang bisa dipesan.',
                         ]);
@@ -320,6 +401,12 @@ class CheckoutController extends Controller
                         'status_pesanan' => 'menunggu',
                         'catatan' => $catatan,
                     ]);
+
+                    if ($customCakeOrder) {
+                        $customCakeOrder->update([
+                            'id_pesanan' => $pesanan->id_pesanan,
+                        ]);
+                    }
 
                     // Simpan setiap detail produk beserta ukuran pilihannya.
                     foreach ($detail as $item) {
@@ -351,6 +438,7 @@ class CheckoutController extends Controller
 
         // Kosongkan keranjang setelah transaksi berhasil.
         session()->forget('keranjang');
+        session()->forget('custom_cake_order_id');
 
         if (in_array($metode, ['transfer', 'qris'], true)) {
             return redirect()->route(

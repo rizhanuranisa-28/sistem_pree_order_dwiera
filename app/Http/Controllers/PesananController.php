@@ -23,6 +23,7 @@ class PesananController extends Controller
         $pesanan = Pesanan::with([
             'user',
             'detailPesanans',
+            'customCakeOrder',
             'pembayaran',
             'jadwalPengambilan',
         ])->get();
@@ -40,6 +41,7 @@ class PesananController extends Controller
     {
         $pesanan = Pesanan::with([
             'detailPesanans.produk',
+            'customCakeOrder',
             'pembayaran',
             'jadwalPengambilan',
         ])
@@ -57,6 +59,7 @@ class PesananController extends Controller
     {
         $pesanan = Pesanan::with([
             'detailPesanans.produk',
+            'customCakeOrder',
             'jadwalPengambilan',
             'pembayaran',
         ])
@@ -68,6 +71,12 @@ class PesananController extends Controller
             return redirect()
                 ->route('pesanan.pelanggan')
                 ->with('error', 'Pesanan tidak dapat diedit karena sudah diproses.');
+        }
+
+        if ($pesanan->customCakeOrder) {
+            return redirect()
+                ->route('pesanan.pelanggan')
+                ->with('error', 'Detail desain kue custom tidak dapat diedit dari formulir pesanan reguler.');
         }
 
         if (
@@ -182,6 +191,12 @@ class PesananController extends Controller
                     if ($pesanan->status_pesanan !== 'menunggu') {
                         throw ValidationException::withMessages([
                             'pesanan' => 'Pesanan sudah diproses dan tidak dapat diedit.',
+                        ]);
+                    }
+
+                    if ($pesanan->customCakeOrder()->exists()) {
+                        throw ValidationException::withMessages([
+                            'pesanan' => 'Detail desain kue custom tidak dapat diubah dari formulir pesanan reguler.',
                         ]);
                     }
 
@@ -328,6 +343,7 @@ class PesananController extends Controller
 
             $jadwal = $pesanan->jadwalPengambilan;
             $pembayaran = $pesanan->pembayaran;
+            $customCakeOrder = $pesanan->customCakeOrder;
 
             if (
                 $pembayaran &&
@@ -335,6 +351,13 @@ class PesananController extends Controller
             ) {
                 throw ValidationException::withMessages([
                     'pesanan' => 'Pembayaran sudah tercatat. Hubungi admin untuk pembatalan.',
+                ]);
+            }
+
+            if ($customCakeOrder) {
+                $customCakeOrder->update([
+                    'status' => \App\Models\CustomCakeOrder::STATUS_DIBATALKAN,
+                    'id_pesanan' => null,
                 ]);
             }
 

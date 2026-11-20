@@ -211,15 +211,36 @@
             </div>
         </div>
     @empty
-        <div class="empty">
-            <p>Keranjang kamu masih kosong.</p>
-            <a href="{{ route('katalog') }}" class="btn btn-main">
-                Pilih Kue
-            </a>
-        </div>
+        @if(!$customCakeOrder)
+            <div class="empty">
+                <p>Keranjang kamu masih kosong.</p>
+                <a href="{{ route('katalog') }}" class="btn btn-main">
+                    Pilih Kue
+                </a>
+            </div>
+        @endif
     @endforelse
 
-    @if(count($items) > 0)
+    @if($customCakeOrder)
+        <div class="item">
+            <div>
+                <div class="item-name">Kue Custom #{{ $customCakeOrder->id_custom_order }}</div>
+                <div class="size-label">Ukuran: {{ $customCakeOrder->ukuran_cm }} cm</div>
+                <div class="item-detail">Tema: {{ $customCakeOrder->tema }} · Tulisan: {{ $customCakeOrder->tulisan }}</div>
+                <div class="item-detail">Dekorasi: {{ $customCakeOrder->dekorasi }}</div>
+                <div class="item-detail">Harga dasar: Rp{{ number_format($customCakeOrder->harga_dasar, 0, ',', '.') }}</div>
+                <div class="item-detail">Biaya dekorasi: Rp{{ number_format($customCakeOrder->biaya_dekorasi, 0, ',', '.') }}</div>
+                <div class="actions">
+                    <a href="{{ route('custom-orders.index') }}" class="btn btn-secondary">Kelola permintaan custom</a>
+                </div>
+            </div>
+            <div class="subtotal">
+                Rp{{ number_format($customCakeOrder->total_harga, 0, ',', '.') }}
+            </div>
+        </div>
+    @endif
+
+    @if(count($items) > 0 || $customCakeOrder)
         <p class="hint">Maksimal pemesanan 2 kue dalam satu transaksi.</p>
 
         <div class="total">
@@ -227,6 +248,7 @@
             <span>Rp{{ number_format($total, 0, ',', '.') }}</span>
         </div>
 
+        @if(count($items) > 0)
         <form action="{{ route('keranjang.kosongkan') }}"
               method="POST"
               style="margin-top: 18px;"
@@ -238,6 +260,7 @@
                 Kosongkan Keranjang
             </button>
         </form>
+        @endif
 
         <a href="{{ route('checkout.keranjang') }}"
            class="btn btn-main"

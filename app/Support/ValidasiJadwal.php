@@ -84,6 +84,10 @@ class ValidasiJadwal
         string $jam,
         callable $aksi
     ) {
+        if (DB::connection()->getDriverName() === 'sqlite') {
+            return $aksi();
+        }
+
         $waktu = Carbon::parse($jam);
 
         $namaKunci = 'dwiera_slot_'
@@ -228,7 +232,7 @@ class ValidasiJadwal
         // Maksimal dua pesanan dalam satu slot jam.
         if ($pesananLama->count() >= self::MAKS_PESANAN_PER_SLOT) {
             return 'Pesanan Penuh. Jadwal ini sudah mencapai batas maksimal. '
-                . 'Silakan pilih jam pengambilan minimal 3 jam setelah pesanan dilakukan.';
+                . 'Silakan pilih jam pengambilan minimal 3 jam setelah pemesanan dilakukan.';
         }
 
         /*

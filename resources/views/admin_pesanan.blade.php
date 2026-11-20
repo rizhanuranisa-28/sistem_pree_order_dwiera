@@ -323,13 +323,24 @@
             <div class="dots-menu" id="dotsMenu">
 
                 <a href="{{ route('admin') }}">
-                    <span class="menu-icon">⌂</span>
+                    <span class="menu-icon">🏠</span>
                     <span>Dashboard</span>
                 </a>
 
                 <a href="{{ route('admin.pesanan') }}" class="active">
-                    <span class="menu-icon">🛍</span>
+                    <span class="menu-icon">🛍️</span>
                     <span>Pesanan</span>
+                    @if (($adminUnreadOrders ?? 0) > 0)
+                        <span class="notification-badge" aria-label="{{ $adminUnreadOrders }} pesanan belum diperiksa">{{ $adminUnreadOrders }}</span>
+                    @endif
+                </a>
+
+                <a href="{{ route('admin.custom-orders.index') }}">
+                    <span class="menu-icon">🎂</span>
+                    <span>Permintaan Custom</span>
+                    @if (($adminUnreadCustomOrders ?? 0) > 0)
+                        <span class="notification-badge" aria-label="{{ $adminUnreadCustomOrders }} permintaan custom belum diperiksa">{{ $adminUnreadCustomOrders }}</span>
+                    @endif
                 </a>
 
                 <a href="{{ route('admin.produk') }}">
@@ -340,6 +351,9 @@
                 <a href="{{ route('admin.pembayaran') }}">
                     <span class="menu-icon">💳</span>
                     <span>Pembayaran</span>
+                    @if (($adminUnreadPayments ?? 0) > 0)
+                        <span class="notification-badge" aria-label="{{ $adminUnreadPayments }} bukti pembayaran belum diperiksa">{{ $adminUnreadPayments }}</span>
+                    @endif
                 </a>
 
                 <hr>
@@ -348,7 +362,7 @@
                     @csrf
 
                     <button type="submit">
-                        <span class="menu-icon">↪</span>
+                        <span class="menu-icon">🚪</span>
                         <span>Logout</span>
                     </button>
                 </form>
@@ -410,6 +424,9 @@
 
                                 <td>
                                     #{{ $item->id_pesanan }}
+                                    @if (in_array($item->status_pesanan, ['menunggu', 'menunggu konfirmasi'], true))
+                                        <span class="unread-dot" title="Belum diperiksa admin" aria-label="Belum diperiksa admin"></span>
+                                    @endif
                                 </td>
 
                                 <td>
@@ -417,6 +434,28 @@
                                 </td>
 
                                 <td class="produk-detail">
+                                    @if($item->customCakeOrder)
+                                        <strong>Kue Custom #{{ $item->customCakeOrder->id_custom_order }}</strong>
+                                        <br>
+                                        <small>Ukuran: {{ $item->customCakeOrder->ukuran_cm }} cm</small>
+                                        <br>
+                                        <small>Tema: {{ $item->customCakeOrder->tema }}</small>
+                                        <br>
+                                        <small>Tulisan: {{ $item->customCakeOrder->tulisan }}</small>
+                                        <br>
+                                        <small>Dekorasi: {{ $item->customCakeOrder->dekorasi }}</small>
+                                        <br>
+                                        <small>Harga dasar: Rp {{ number_format($item->customCakeOrder->harga_dasar, 0, ',', '.') }}</small>
+                                        <br>
+                                        <small>Biaya dekorasi: Rp {{ number_format($item->customCakeOrder->biaya_dekorasi, 0, ',', '.') }}</small>
+                                        @if($item->customCakeOrder->foto_referensi)
+                                            <br><a href="{{ route('custom-orders.reference', $item->customCakeOrder->id_custom_order) }}" target="_blank" rel="noopener">Foto referensi</a>
+                                        @endif
+                                        @if($item->detailPesanans->isNotEmpty())
+                                            <hr style="border: 0; border-top: 1px solid #eee; margin: 8px 0;">
+                                        @endif
+                                    @endif
+
                                     @foreach($item->detailPesanans as $detail)
 
                                         <strong>
@@ -441,6 +480,13 @@
                                 </td>
 
                                 <td>
+                                    @if($item->customCakeOrder)
+                                        1
+                                        @if($item->detailPesanans->isNotEmpty())
+                                            <br>
+                                        @endif
+                                    @endif
+
                                     @foreach($item->detailPesanans as $detail)
 
                                         {{ $detail->jumlah }}

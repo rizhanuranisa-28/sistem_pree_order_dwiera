@@ -34,6 +34,11 @@ class AdminPaymentFiltersTest extends TestCase
             ->assertSee('#PAY0001')
             ->assertSee('#PAY0002')
             ->assertSee('#PAY0003')
+            ->assertSee('Permintaan Custom')
+            ->assertSee(route('admin.custom-orders.index'))
+            ->assertSee('🏠')
+            ->assertSee('🛍️')
+            ->assertSee('🚪')
             ->assertSee('Rp 60.000');
     }
 
@@ -93,6 +98,28 @@ class AdminPaymentFiltersTest extends TestCase
             ->assertSee('Rp 0');
     }
 
+    public function test_admin_navigation_and_payment_rows_mark_unreviewed_items(): void
+    {
+        DB::table('pembayaran')
+            ->where('id_pembayaran', 2)
+            ->update([
+                'bukti_pembayaran' => 'bukti/transfer-menunggu.png',
+                'status_bukti' => 'menunggu',
+            ]);
+
+        DB::table('custom_cake_orders')->insert([
+            'id_users' => 1,
+            'status' => 'menunggu_konfirmasi',
+        ]);
+
+        $this->get(route('admin.pembayaran'))
+            ->assertOk()
+            ->assertSee('aria-label="1 pesanan belum diperiksa"', false)
+            ->assertSee('aria-label="1 permintaan custom belum diperiksa"', false)
+            ->assertSee('aria-label="1 bukti pembayaran belum diperiksa"', false)
+            ->assertSee('class="unread-dot"', false);
+    }
+
     private function createSchema(): void
     {
         Schema::create('users', function (Blueprint $table) {
@@ -105,6 +132,18 @@ class AdminPaymentFiltersTest extends TestCase
             $table->increments('id_pesanan');
             $table->unsignedInteger('id_users')->nullable();
             $table->string('status_pesanan')->nullable();
+        });
+
+        Schema::create('custom_cake_orders', function (Blueprint $table) {
+            $table->increments('id_custom_order');
+            $table->unsignedInteger('id_users')->nullable();
+            $table->unsignedInteger('id_pesanan')->nullable();
+            $table->string('ukuran_cm')->nullable();
+            $table->string('tema')->nullable();
+            $table->string('tulisan')->nullable();
+            $table->text('dekorasi')->nullable();
+            $table->decimal('total_harga', 12, 2)->nullable();
+            $table->string('status')->nullable();
         });
 
         Schema::create('pembayaran', function (Blueprint $table) {

@@ -2,9 +2,10 @@
     if (request()->routeIs('admin*')) {
         $items = [
             ['route' => 'admin', 'active' => 'admin', 'label' => 'Beranda', 'icon' => '🏠'],
-            ['route' => 'admin.pesanan', 'active' => 'admin.pesanan*', 'label' => 'Pesanan', 'icon' => '🛍'],
+            ['route' => 'admin.pesanan', 'active' => 'admin.pesanan*', 'label' => 'Pesanan', 'icon' => '🛍', 'badge' => $adminUnreadOrders ?? 0, 'badge_label' => 'pesanan belum diperiksa'],
+            ['route' => 'admin.custom-orders.index', 'active' => 'admin.custom-orders.*', 'label' => 'Custom', 'icon' => '🎂', 'badge' => $adminUnreadCustomOrders ?? 0, 'badge_label' => 'permintaan custom belum diperiksa'],
             ['route' => 'admin.produk', 'active' => 'admin.produk*', 'label' => 'Produk', 'icon' => '🎂'],
-            ['route' => 'admin.pembayaran', 'active' => 'admin.pembayaran*', 'label' => 'Bayar', 'icon' => '💳'],
+            ['route' => 'admin.pembayaran', 'active' => 'admin.pembayaran*', 'label' => 'Bayar', 'icon' => '💳', 'badge' => $adminUnreadPayments ?? 0, 'badge_label' => 'bukti pembayaran belum diperiksa'],
         ];
     } elseif (request()->routeIs('owner*')) {
         $items = [
@@ -18,13 +19,40 @@
         $items = [
             ['route' => 'pelanggan', 'active' => 'pelanggan', 'label' => 'Beranda', 'icon' => '⌂'],
             ['route' => 'katalog', 'active' => ['katalog', 'produk.detail'], 'label' => 'Katalog', 'icon' => '▦'],
-            ['route' => 'pesanan.pelanggan', 'active' => ['pesanan.pelanggan', 'pesanan.*', 'keranjang.*', 'checkout.*', 'pembayaran.*', 'preorder.*', 'struk.pelanggan'], 'label' => 'Pesanan', 'icon' => '♧'],
+            ['route' => 'pesanan.pelanggan', 'active' => ['pesanan.pelanggan', 'pesanan.*', 'keranjang.*', 'checkout.*', 'pembayaran.*', 'preorder.*', 'struk.pelanggan'], 'label' => 'Pesanan', 'icon' => '♧', 'badge' => $customerUnreadCount ?? 0, 'badge_label' => 'notifikasi pesanan'],
             ['route' => 'profil', 'active' => 'profil*', 'label' => 'Profil', 'icon' => '♙'],
         ];
     }
 @endphp
 
 <style>
+    .notification-badge {
+        display: inline-flex;
+        min-width: 19px;
+        height: 19px;
+        align-items: center;
+        justify-content: center;
+        margin-left: auto;
+        padding: 0 5px;
+        border-radius: 999px;
+        background: #d94369;
+        color: #fff;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .unread-dot {
+        display: inline-block;
+        width: 9px;
+        height: 9px;
+        margin-left: 6px;
+        border-radius: 50%;
+        background: #d94369;
+        box-shadow: 0 0 0 3px rgba(217, 67, 105, .13);
+        vertical-align: middle;
+    }
+
     .mobile-bottom-nav {
         display: none;
     }
@@ -56,6 +84,7 @@
 
         .mobile-bottom-nav a,
         .mobile-bottom-nav button {
+            position: relative;
             display: flex;
             min-width: 0;
             flex: 1;
@@ -95,6 +124,17 @@
             white-space: nowrap;
         }
 
+        .mobile-bottom-nav .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 12%;
+            min-width: 17px;
+            height: 17px;
+            margin: 0;
+            padding: 0 4px;
+            font-size: 10px;
+        }
+
         .mobile-bottom-nav form {
             display: flex;
             min-width: 0;
@@ -118,13 +158,19 @@
            title="{{ $item['label'] }}">
             <span class="nav-icon" aria-hidden="true">{{ $item['icon'] }}</span>
             <span class="nav-label">{{ $item['label'] }}</span>
+            @if (!empty($item['badge']))
+                <span class="notification-badge"
+                      aria-label="{{ $item['badge'] }} {{ $item['badge_label'] ?? 'notifikasi' }}">
+                    {{ $item['badge'] }}
+                </span>
+            @endif
         </a>
     @endforeach
 
     <form action="{{ route('logout') }}" method="POST">
         @csrf
         <button type="submit" aria-label="Logout" title="Logout">
-            <span class="nav-icon" aria-hidden="true">🚪</span>
+            <span class="nav-icon" aria-hidden="true">{{ request()->routeIs('admin*', 'owner*') ? '🚪' : '↪️' }}</span>
             <span class="nav-label">Logout</span>
         </button>
     </form>

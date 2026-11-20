@@ -9,6 +9,7 @@ use App\Models\Pembayaran;
 use App\Models\Pesanan;
 use App\Models\Produk;
 use App\Models\UkuranProduk;
+use App\Support\NominalRupiah;
 use App\Support\ValidasiJadwal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -39,6 +40,12 @@ class AdminTambahPesananController extends Controller
      */
     public function store(Request $request)
     {
+        $request->merge([
+            'jumlah_bayar' => NominalRupiah::normalisasi(
+                $request->input('jumlah_bayar')
+            ),
+        ]);
+
         $validated = $request->validate([
             'nama_customer' => 'required|string|max:100',
             'nomor_telepon' => 'required|string|max:20',

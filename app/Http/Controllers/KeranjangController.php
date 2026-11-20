@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CustomCakeOrder;
 use App\Models\Produk;
 use App\Models\UkuranProduk;
 use App\Support\BatasJumlahPesanan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class KeranjangController extends Controller
 {
@@ -15,7 +17,25 @@ class KeranjangController extends Controller
     public function index()
     {
         $keranjang = session()->get('keranjang', []);
-        $jumlahTotal = BatasJumlahPesanan::total($keranjang);
+        $customCakeOrder = null;
+
+        if (session()->has('custom_cake_order_id')) {
+            $customCakeOrder = CustomCakeOrder::where(
+                'id_custom_order',
+                session('custom_cake_order_id')
+            )
+                ->where('id_users', Auth::user()->id_users)
+                ->where('status', CustomCakeOrder::STATUS_DISETUJUI)
+                ->whereNull('id_pesanan')
+                ->first();
+
+            if (!$customCakeOrder) {
+                session()->forget('custom_cake_order_id');
+                session()->flash('error', 'Permintaan custom tidak tersedia untuk checkout.');
+            }
+        }
+
+        $jumlahTotal = BatasJumlahPesanan::total($keranjang) + ($customCakeOrder ? 1 : 0);
 
         $items = [];
         $total = 0;
@@ -50,7 +70,16 @@ class KeranjangController extends Controller
             $total += $subtotal;
         }
 
-        return view('keranjang', compact('items', 'total', 'jumlahTotal'));
+        if ($customCakeOrder) {
+            $total += (float) $customCakeOrder->total_harga;
+        }
+
+        return view('keranjang', compact(
+            'items',
+            'total',
+            'jumlahTotal',
+            'customCakeOrder'
+        ));
     }
 
     /**
@@ -91,7 +120,9 @@ class KeranjangController extends Controller
         // Ambil data keranjang dari session.
         $keranjang = session()->get('keranjang', []);
         if (
-            BatasJumlahPesanan::total($keranjang) + $jumlah >
+            BatasJumlahPesanan::total($keranjang) +
+                (session()->has('custom_cake_order_id') ? 1 : 0) +
+                $jumlah >
             BatasJumlahPesanan::MAKSIMAL_KUE
         ) {
             return back()
@@ -179,7 +210,9 @@ class KeranjangController extends Controller
         if ($validated['aksi'] === 'tambah') {
             if (
                 $jumlah >= BatasJumlahPesanan::MAKSIMAL_KUE ||
-                BatasJumlahPesanan::total($keranjang) >= BatasJumlahPesanan::MAKSIMAL_KUE
+                BatasJumlahPesanan::total($keranjang) +
+                    (session()->has('custom_cake_order_id') ? 1 : 0) >=
+                    BatasJumlahPesanan::MAKSIMAL_KUE
             ) {
                 return back()->with(
                     'error',

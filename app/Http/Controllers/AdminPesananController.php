@@ -15,6 +15,7 @@ class AdminPesananController extends Controller
             'user',
             'customer',
             'detailPesanans.produk',
+            'customCakeOrder',
             'pembayaran',
             'jadwalPengambilan',
         ])

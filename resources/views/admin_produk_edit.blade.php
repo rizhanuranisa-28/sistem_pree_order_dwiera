@@ -303,11 +303,12 @@
                                 <label>Harga (Rp)</label>
 
                                 <input
-                                    type="number"
+                                    type="text"
                                     name="ukuran_produk[{{ $index }}][harga]"
                                     value="{{ $ukuran['harga'] ?? '' }}"
-                                    min="0"
-                                    placeholder="Contoh: 150000"
+                                    inputmode="numeric"
+                                    data-currency-input
+                                    placeholder="Contoh: 150.000"
                                     required
                                 >
                             </div>
@@ -444,10 +445,11 @@
                     <label>Harga (Rp)</label>
 
                     <input
-                        type="number"
+                        type="text"
                         name="ukuran_produk[${indexUkuran}][harga]"
-                        min="0"
-                        placeholder="Contoh: 200000"
+                        inputmode="numeric"
+                        data-currency-input
+                        placeholder="Contoh: 200.000"
                         required
                     >
                 </div>
@@ -477,6 +479,8 @@
         button.closest('.ukuran-card').remove();
     }
 </script>
+
+@include('partials.currency_input_formatter')
 
 </body>
 </html>

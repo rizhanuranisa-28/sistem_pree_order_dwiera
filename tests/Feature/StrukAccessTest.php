@@ -92,6 +92,24 @@ class StrukAccessTest extends TestCase
             $table->string('status_pesanan')->nullable();
         });
 
+        Schema::create('custom_cake_orders', function (Blueprint $table) {
+            $table->increments('id_custom_order');
+            $table->integer('id_users');
+            $table->integer('id_pesanan')->nullable();
+            $table->string('ukuran_cm', 10);
+            $table->decimal('harga_dasar', 12, 2);
+            $table->string('tema', 100);
+            $table->string('tulisan', 100);
+            $table->text('dekorasi');
+            $table->string('foto_referensi')->nullable();
+            $table->text('catatan_pelanggan')->nullable();
+            $table->decimal('biaya_dekorasi', 12, 2)->nullable();
+            $table->decimal('total_harga', 12, 2)->nullable();
+            $table->string('status', 40);
+            $table->text('catatan_admin')->nullable();
+            $table->timestamps();
+        });
+
         Schema::create('pembayaran', function (Blueprint $table) {
             $table->increments('id_pembayaran');
             $table->unsignedInteger('id_pesanan')->nullable();

@@ -340,6 +340,52 @@
             box-shadow: 0 8px 22px rgba(190, 100, 130, 0.10);
         }
 
+        .custom-order-card {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 28px;
+            padding: 22px;
+            border: 1px dashed #d9688c;
+            border-radius: 14px;
+            background: linear-gradient(110deg, #fff 0%, #fff0f5 100%);
+            color: #c9577c;
+            text-decoration: none;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+
+        .custom-order-card:hover {
+            box-shadow: 0 8px 22px rgba(190, 100, 130, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .custom-order-icon {
+            display: grid;
+            flex: 0 0 52px;
+            width: 52px;
+            height: 52px;
+            place-items: center;
+            border-radius: 50%;
+            background: #d9688c;
+            color: white;
+            font-size: 30px;
+            font-weight: 400;
+        }
+
+        .custom-order-copy strong {
+            display: block;
+            margin-bottom: 4px;
+            color: #a83e65;
+            font-size: 16px;
+        }
+
+        .custom-order-copy span {
+            display: block;
+            color: #806772;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
         .cake-image {
             width: 100%;
             height: 200px;
@@ -738,6 +784,14 @@
                 autocomplete="off"
             >
         </div>
+
+        <a href="{{ route('custom-orders.create') }}" class="custom-order-card">
+            <span class="custom-order-icon" aria-hidden="true">+</span>
+            <span class="custom-order-copy">
+                <strong>Pesan Kue Custom</strong>
+                <span>Wujudkan desain kue spesialmu. Harga dekorasi akan ditawarkan admin setelah desain diperiksa.</span>
+            </span>
+        </a>
 
         <!-- ================= PRODUCT HEADER ================= -->
 

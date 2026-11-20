@@ -223,6 +223,22 @@
         </div>
     @endforeach
 
+    @if ($customCakeOrder)
+        <div class="item">
+            <div>
+                <div class="item-name">Kue Custom #{{ $customCakeOrder->id_custom_order }}</div>
+                <div class="size-label">Ukuran: {{ $customCakeOrder->ukuran_cm }} cm</div>
+                <div class="item-detail">Tema: {{ $customCakeOrder->tema }} · Tulisan: {{ $customCakeOrder->tulisan }}</div>
+                <div class="item-detail">Dekorasi: {{ $customCakeOrder->dekorasi }}</div>
+                <div class="item-detail">Harga dasar: Rp{{ number_format($customCakeOrder->harga_dasar, 0, ',', '.') }}</div>
+                <div class="item-detail">Biaya dekorasi: Rp{{ number_format($customCakeOrder->biaya_dekorasi, 0, ',', '.') }}</div>
+            </div>
+            <div class="subtotal">
+                Rp{{ number_format($customCakeOrder->total_harga, 0, ',', '.') }}
+            </div>
+        </div>
+    @endif
+
     <div class="total">
         <span>Total Tagihan</span>
         <span>Rp{{ number_format($total, 0, ',', '.') }}</span>

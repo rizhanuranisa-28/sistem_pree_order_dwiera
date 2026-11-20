@@ -37,6 +37,8 @@
         top: 0;
         left: 0;
         bottom: 0;
+        display: flex;
+        flex-direction: column;
     }
 
     .admin-label {
@@ -50,6 +52,7 @@
 
     .menu {
         display: flex;
+        flex: 1;
         flex-direction: column;
         gap: 8px;
     }
@@ -83,7 +86,7 @@
     }
 
     .logout-form {
-        margin-top: 8px;
+        margin-top: auto;
     }
 
     .logout-button {
@@ -483,8 +486,19 @@
         </a>
 
         <a href="{{ route('admin.pesanan') }}">
-            <span class="menu-icon">📋</span>
+            <span class="menu-icon">🛍️</span>
             <span>Pesanan</span>
+            @if (($adminUnreadOrders ?? 0) > 0)
+                <span class="notification-badge" aria-label="{{ $adminUnreadOrders }} pesanan belum diperiksa">{{ $adminUnreadOrders }}</span>
+            @endif
+        </a>
+
+        <a href="{{ route('admin.custom-orders.index') }}">
+            <span class="menu-icon">🎂</span>
+            <span>Permintaan Custom</span>
+            @if (($adminUnreadCustomOrders ?? 0) > 0)
+                <span class="notification-badge" aria-label="{{ $adminUnreadCustomOrders }} permintaan custom belum diperiksa">{{ $adminUnreadCustomOrders }}</span>
+            @endif
         </a>
 
         <a href="{{ route('admin.produk') }}" class="active">
@@ -495,6 +509,9 @@
         <a href="{{ route('admin.pembayaran') }}">
             <span class="menu-icon">💳</span>
             <span>Pembayaran</span>
+            @if (($adminUnreadPayments ?? 0) > 0)
+                <span class="notification-badge" aria-label="{{ $adminUnreadPayments }} bukti pembayaran belum diperiksa">{{ $adminUnreadPayments }}</span>
+            @endif
         </a>
 
         <form action="{{ route('logout') }}" method="POST" class="logout-form">

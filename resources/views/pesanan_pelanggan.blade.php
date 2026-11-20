@@ -431,6 +431,12 @@
         <p>Lihat pesanan dan status pemesanan kue kamu.</p>
     </div>
 
+    <div class="order-actions" style="margin: 0 0 20px;">
+        <a href="{{ route('custom-orders.index') }}" class="btn">
+            Riwayat Pesanan Custom
+        </a>
+    </div>
+
     @if(session('success'))
         <div class="alert alert-success" role="status">
             💗 {{ session('success') }}
@@ -510,7 +516,23 @@
             <div class="product-list">
                 <h3>Detail Kue</h3>
 
-                @forelse($order->detailPesanans as $detail)
+                @if($order->customCakeOrder)
+                    <div class="product-item">
+                        <span>
+                            Kue Custom — ukuran {{ $order->customCakeOrder->ukuran_cm }} cm
+                            <br>Tema: {{ $order->customCakeOrder->tema }}
+                            <br>Tulisan: {{ $order->customCakeOrder->tulisan }}
+                            <br>Dekorasi: {{ $order->customCakeOrder->dekorasi }}
+                            <br>Harga dasar: Rp{{ number_format($order->customCakeOrder->harga_dasar, 0, ',', '.') }}
+                            <br>Biaya dekorasi: Rp{{ number_format($order->customCakeOrder->biaya_dekorasi, 0, ',', '.') }}
+                        </span>
+                        <strong>
+                            Rp{{ number_format($order->customCakeOrder->total_harga, 0, ',', '.') }}
+                        </strong>
+                    </div>
+                @endif
+
+                @foreach($order->detailPesanans as $detail)
                     <div class="product-item">
                         <span>
                             {{ $detail->produk->nama_kue ?? 'Produk' }}
@@ -521,9 +543,11 @@
                             Rp{{ number_format($detail->subtotal ?? 0, 0, ',', '.') }}
                         </strong>
                     </div>
-                @empty
+                @endforeach
+
+                @if(!$order->customCakeOrder && $order->detailPesanans->isEmpty())
                     <p>Detail kue belum tersedia.</p>
-                @endforelse
+                @endif
             </div>
 
             @if(!empty($order->catatan))
@@ -617,8 +641,9 @@
 
                     {{-- Alasan admin mengembalikan bukti --}}
                     @if(!$sudahLunas && $statusBukti === 'dikembalikan')
-                        <div class="returned-reason">
-                            <strong>Alasan pengembalian dari admin:</strong>
+                        <div class="returned-reason" role="alert" aria-live="assertive">
+                            <strong>Notifikasi: bukti pembayaran dikembalikan admin.</strong>
+                            <br><strong>Alasan pengembalian:</strong>
                             <br>
                             {{ $alasanPengembalian ?: 'Silakan hubungi admin untuk mengetahui alasan pengembalian.' }}
                         </div>

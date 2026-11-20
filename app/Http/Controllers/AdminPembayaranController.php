@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Pembayaran;
 use App\Models\RiwayatBuktiPembayaran;
+use App\Support\NominalRupiah;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -39,6 +40,7 @@ class AdminPembayaranController extends Controller
 
         $query = Pembayaran::with([
             'pesanan.user',
+            'pesanan.customCakeOrder',
             'pesanan.detailPesanans.produk',
             'riwayatBukti',
         ])
@@ -79,10 +81,27 @@ class AdminPembayaranController extends Controller
     public function bukti($id)
     {
         $pembayaran = Pembayaran::findOrFail($id);
-        $path = trim(
-            str_replace('\\', '/', (string) $pembayaran->bukti_pembayaran),
-            '/'
+        return $this->responseBukti($pembayaran->bukti_pembayaran);
+    }
+
+    /**
+     * Menampilkan satu bukti lama dari riwayat pembayaran admin.
+     */
+    public function riwayatBukti($id)
+    {
+        abort_unless(
+            Auth::user() && Auth::user()->role === 'admin',
+            403,
+            'Halaman ini hanya dapat diakses admin.'
         );
+
+        $riwayat = RiwayatBuktiPembayaran::findOrFail($id);
+        return $this->responseBukti($riwayat->nama_file);
+    }
+
+    private function responseBukti(?string $file)
+    {
+        $path = trim(str_replace('\\', '/', (string) $file), '/');
 
         $normalizedPath = '/' . $path;
         foreach ([
@@ -287,6 +306,12 @@ class AdminPembayaranController extends Controller
             403,
             'Halaman ini hanya dapat diakses admin.'
         );
+
+        $request->merge([
+            'jumlah_bayar' => NominalRupiah::normalisasi(
+                $request->input('jumlah_bayar')
+            ),
+        ]);
 
         $pembayaran = Pembayaran::findOrFail($id);
 

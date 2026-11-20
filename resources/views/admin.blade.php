@@ -482,6 +482,7 @@
 $pesananTerbaru = \App\Models\Pesanan::with([
 'user',
 'detailPesanans.produk',
+'customCakeOrder',
 'pembayaran',
 'jadwalPengambilan'
 ])
@@ -527,13 +528,24 @@ $pesananMenunggu = \App\Models\Pesanan::whereIn(
     <div class="dots-menu" id="dotsMenu">
 
         <a href="{{ route('admin') }}" class="active">
-            <span class="menu-icon">⌂</span>
+            <span class="menu-icon">🏠</span>
             <span>Dashboard</span>
         </a>
 
         <a href="{{ route('admin.pesanan') }}">
-            <span class="menu-icon">🛍</span>
+            <span class="menu-icon">🛍️</span>
             <span>Pesanan</span>
+            @if (($adminUnreadOrders ?? 0) > 0)
+                <span class="notification-badge" aria-label="{{ $adminUnreadOrders }} pesanan belum diperiksa">{{ $adminUnreadOrders }}</span>
+            @endif
+        </a>
+
+        <a href="{{ route('admin.custom-orders.index') }}">
+            <span class="menu-icon">🎂</span>
+            <span>Permintaan Custom</span>
+            @if (($adminUnreadCustomOrders ?? 0) > 0)
+                <span class="notification-badge" aria-label="{{ $adminUnreadCustomOrders }} permintaan custom belum diperiksa">{{ $adminUnreadCustomOrders }}</span>
+            @endif
         </a>
 
         <a href="{{ route('admin.produk') }}">
@@ -544,6 +556,9 @@ $pesananMenunggu = \App\Models\Pesanan::whereIn(
         <a href="{{ route('admin.pembayaran') }}">
             <span class="menu-icon">💳</span>
             <span>Pembayaran</span>
+            @if (($adminUnreadPayments ?? 0) > 0)
+                <span class="notification-badge" aria-label="{{ $adminUnreadPayments }} bukti pembayaran belum diperiksa">{{ $adminUnreadPayments }}</span>
+            @endif
         </a>
 
         <hr>
@@ -552,7 +567,7 @@ $pesananMenunggu = \App\Models\Pesanan::whereIn(
             @csrf
 
             <button type="submit">
-                <span class="menu-icon">↪</span>
+                <span class="menu-icon">🚪</span>
                 <span>Logout</span>
             </button>
         </form>
@@ -578,13 +593,24 @@ $pesananMenunggu = \App\Models\Pesanan::whereIn(
     <nav class="menu">
 
         <a href="{{ route('admin') }}" class="active">
-            <span class="menu-icon">⌂</span>
+            <span class="menu-icon">🏠</span>
             <span>Dashboard</span>
         </a>
 
         <a href="{{ route('admin.pesanan') }}">
-            <span class="menu-icon">🛍</span>
+            <span class="menu-icon">🛍️</span>
             <span>Pesanan</span>
+            @if (($adminUnreadOrders ?? 0) > 0)
+                <span class="notification-badge" aria-label="{{ $adminUnreadOrders }} pesanan belum diperiksa">{{ $adminUnreadOrders }}</span>
+            @endif
+        </a>
+
+        <a href="{{ route('admin.custom-orders.index') }}">
+            <span class="menu-icon">🎂</span>
+            <span>Permintaan Custom</span>
+            @if (($adminUnreadCustomOrders ?? 0) > 0)
+                <span class="notification-badge" aria-label="{{ $adminUnreadCustomOrders }} permintaan custom belum diperiksa">{{ $adminUnreadCustomOrders }}</span>
+            @endif
         </a>
 
         <a href="{{ route('admin.produk') }}">
@@ -595,6 +621,9 @@ $pesananMenunggu = \App\Models\Pesanan::whereIn(
         <a href="{{ route('admin.pembayaran') }}">
             <span class="menu-icon">💳</span>
             <span>Pembayaran</span>
+            @if (($adminUnreadPayments ?? 0) > 0)
+                <span class="notification-badge" aria-label="{{ $adminUnreadPayments }} bukti pembayaran belum diperiksa">{{ $adminUnreadPayments }}</span>
+            @endif
         </a>
 
     </nav>
@@ -605,7 +634,7 @@ $pesananMenunggu = \App\Models\Pesanan::whereIn(
             @csrf
 
             <button type="submit">
-                <span>↪</span>
+                <span>🚪</span>
                 <span>Logout</span>
             </button>
 
@@ -787,7 +816,14 @@ $pesananMenunggu = \App\Models\Pesanan::whereIn(
 
                                 <td>
 
-                                    @if($item->detailPesanans->count() > 0)
+                                    @if($item->customCakeOrder)
+                                        Kue Custom ({{ $item->customCakeOrder->ukuran_cm }} cm)
+
+                                        @if($item->detailPesanans->count() > 0)
+                                            + {{ $item->detailPesanans->count() }} produk katalog
+                                        @endif
+
+                                    @elseif($item->detailPesanans->count() > 0)
 
                                         {{ $item->detailPesanans->first()->produk->nama_kue ?? '-' }}
 
